@@ -1,10 +1,17 @@
-/** cprest client access for API
- */
+/** 
+ * cprest client access for API 
+ * @module index
+ * @requires fs
+ * @requires https
+ * @requires ip-utils From NMPJS.org
+ * @requires ./auth/mycpapi.json A local config file
+ * @requires ./auth./mycpsite.json A local config file
+ * */
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 'use strict'
 const https = require('https')
 const fs = require('fs');
-
+const ipUtil = require('ip-utils')
 
 /**
  * Traverse object collected in object
@@ -19,7 +26,6 @@ const fs = require('fs');
  */ 
 const get = (p, o) =>
   p.reduce((xs, x) => (xs && xs[x]) ? xs[x] : null, o)
-
 
 /**
  * Variable required from auth/mycpapi.json file
@@ -89,18 +95,39 @@ var sessionid = {}
 var myfilename = 'dump'
 
 var nodata = {}
-if (process.argv[2]) {
-        ip = process.argv[2]
-        nodata.filter = ip
-	myfilename = ip
-	nodata['ip-only'] = true
-	nodata.type = 'host'
-	usedobj[ip] = []
+/**
+ * Perform a check against the command line arguments passed to the application
+ * Must be a list of 3 arguments with a quad-octet formatted IPv4 address
+ * @function checkArgs
+ */
+function checkArgs() {
+	try {
+		if (process.argv[2] && process.argv.length == 3) {	//Arguments must of length 3
+			ip = process.argv[2]			//Grab the third argument
+			if (ipUtil.isValidIpv4(ip)) {	//Check for valid IPv4 quad-octet
+				nodata.filter = ip			//Set the string value of filter as the IP address
+				myfilename = ip				//Filenaming for json output
+				nodata['ip-only'] = true	//Set ip-only flag to true
+				nodata.type = 'host'		//Set object type to "host" only
+				usedobj[ip] = []	
+				main()						//Run the app
+			}
+			else throw new Error("FAILURE: Not a quad-octet IPv4 address")
+		} else throw new Error("FAILURE: Application arguments list must be of length 3")
+	} catch (err) {
+		console.log(err.message)
+		console.log(process.argv)
+		console.log('\nUSAGE INSTRUCTIONS\n\t$> node index a.b.c.d')
+		process.exit(1)
+	}
 }
-
-main()
+checkArgs()
 //.then(admins)
 
+/**
+ * Post parameter checks, run the program
+ * @function main
+ */
 async function main() {
 	startSession(mycred)
 		.then(sessiontoken => setSession(sessiontoken))
@@ -134,38 +161,38 @@ async function admins() {
 }
 
 /** 
- * Object use for an IP
+ * Check against the Check Point Management API for host object usage of a specific quad octet IPv4 address 
  * @function showObjects
- * @param {String} ip - IP address to search for
- * @returns {uid[]} Direct and indirect object usage
+ * @param {String} ip - IP address to search 
+ * @returns {uid[]} UIDs of direct and indirect object usage
  */
 
 async function showObjects(mydata, mycmd) {
-        try {
+	try {
 		var objdata = {}
 		var objarr = []
 		var cleanarr = []
-                mydata.offset = 0
-                mydata['details-level'] = details
-                mydata.limit = limit
-                console.log('showing session')
-                var setit = toApi.doPost(mydata, mycmd)
+		mydata.offset = 0
+		mydata['details-level'] = details
+		mydata.limit = limit
+		console.log('showing session')
+		var setit = toApi.doPost(mydata, mycmd)
 		//toApi.showOpt()
-                objdata = await callOut(setit.options, setit.postData)
-                objarr = objarr.concat(objdata.objects)
-                if (objdata.total > objdata.to) {
-                        while (objdata.total >= mydata.offset) {
-                                console.log('From ' + objdata.from + ' to ' + objdata.to + ' of ' + objdata.total + ' indexed')
-                                mydata.offset = Number(objdata.to)
-                                setit = toApi.doPost(mydata, mycmd)
-                                objdata = await callOut(setit.options, setit.postData)
-                                objarr = objarr.concat(objdata.objects)
-                        }
-                }
-                return objarr
-        } catch (err) {
-                console.log('error in showObjects : ' + err)
-        }
+		objdata = await callOut(setit.options, setit.postData)
+		objarr = objarr.concat(objdata.objects)
+		if (objdata.total > objdata.to) {
+			while (objdata.total >= mydata.offset) {
+				console.log('From ' + objdata.from + ' to ' + objdata.to + ' of ' + objdata.total + ' indexed')
+				mydata.offset = Number(objdata.to)
+				setit = toApi.doPost(mydata, mycmd)
+				objdata = await callOut(setit.options, setit.postData)
+				objarr = objarr.concat(objdata.objects)
+			}
+		}
+		return objarr
+	} catch (err) {
+			console.log('error in showObjects : ' + err)
+	}
 }
 
 /** 
@@ -174,19 +201,17 @@ async function showObjects(mydata, mycmd) {
  * @param {String[]} uid - UID to verify IP address filter
  * @returns {uid[]} -  array of safe UID's to verify usage against
  */
-
-
 async function checkObject(objarr) {
 	try {
 		var mydata = {}
 		var mytagged = []
 		mycmd = 'show-object'
-                //mydata['details-level'] = details
+		//mydata['details-level'] = details
 		for (var x in objarr) {
 			let myobj = objarr[x]
 			mydata.uid = myobj
-                	var setit = toApi.doPost(mydata, mycmd)
-                	let indat = await callOut(setit.options, setit.postData)
+			var setit = toApi.doPost(mydata, mycmd)
+			let indat = await callOut(setit.options, setit.postData)
 			if (indat.object['ipv4-address'] === ip) {
 				console.log(indat.object.uid)
 				mytagged = mytagged.concat(indat.object)
@@ -201,8 +226,6 @@ async function checkObject(objarr) {
 		console.log('error in checkObject : ' + err)
 	}
 }
-
-
 
 /**
  * where-used returned data format
@@ -271,11 +294,17 @@ async function whereUsed(objarr) {
 	}
 }
 
+/**
+ * For a given set of Check Point objects, search for direct object usage and parse group membership
+ * @function parseObjectUse
+ * @param {Object[]} objdat Array of Check Point objects
+ * @return {Object[]} An array of Check Point objects per given UIDs 
+ */
 async function parseObjectUse(objdat) {
 	try {
 		var myres = []
 		var myret = []
-		Object.keys(objdat).forEach(uid => {
+		Object.keys(objdat).forEach(uid => {	//For each UID, concatenate a response of all reference of used-directly
 			//myres = myres.concat(get([uid, '0', 'used-directly', '0', 'objects'], usedobj[ip][uid]))
 			myres = myres.concat(get([uid, '0', 'used-directly', '0', 'objects'], objdat))
 			//myres['access'] = myres['access'].concat(get([uid, '0', 'used-directly', '1', 'access-control-rules', '0'], objdat))
@@ -283,18 +312,18 @@ async function parseObjectUse(objdat) {
 		});
 		//let unique = [...new Set(myres)]
 		myres = [...new Set(myres)]
-		for (var x in myres) {
+		for (var x in myres) {	
 			let mychk = await getType(myres[x])
-			if (mychk.type === 'group') {
+			if (mychk.type === 'group') {	//If object returned is a group, must parse through group membership
 				let mygrp = {}
 				mygrp.type = mychk.type
 				mygrp.uid = mychk.uid
 				myret = myret.concat(mygrp)
 				let memarr = []
-				Object.values(mychk.members).forEach(gmem => {
-					memarr = memarr.concat(gmem.uid)
+				Object.values(mychk.members).forEach(gmem => {	//For every group member identified	
+					memarr = memarr.concat(gmem.uid)			//Concatenate all members' UIDs into the array
 				});
-				let smembers = memarr.filter(x => allobjs[myuids].includes(x))
+				let smembers = memarr.filter(x => allobjs[myuids].includes(x))	
 				let members = {}
 				members.remove = smembers.join()
 				mygrp.members = members
@@ -310,6 +339,7 @@ async function parseObjectUse(objdat) {
 		console.log('error in parseObjectUse : ' + err)
 	}
 }
+
 
 async function parseRuleUse(objdat) {
 	try {
@@ -405,8 +435,8 @@ async function getUsedObject(objarr) {
 		for (var x in objarr) {
 			let myobj = objarr[x]
 			mydata.uid = myobj
-                	var setit = toApi.doPost(mydata, mycmd)
-                	let indat = await callOut(setit.options, setit.postData)
+			var setit = toApi.doPost(mydata, mycmd)
+			let indat = await callOut(setit.options, setit.postData)
 			//console.log(indat.object.type)
 			myreturn = myreturn.concat(indat.object)
 		}
@@ -416,35 +446,49 @@ async function getUsedObject(objarr) {
 	}
 }
 
+/**
+ * Given a Check Point UID, return the full set of object details via 'show-object'
+ * @function getType
+ * @param {uid} myobj 
+ * @return The full details version of the Check Point object returned from the API call out
+ */
 async function getType(myobj) {
 	try {
 		var mydata = {}
 		mycmd = 'show-object'
-        mydata['details-level'] = 'full'
+        mydata['details-level'] = 'full'	//Modify details level to full
 		mydata.uid = myobj
         var setit = toApi.doPost(mydata, mycmd)
         let indat = await callOut(setit.options, setit.postData)
-			//console.log(indat.object.type)
+		//console.log(indat.object.type)
 		return await indat.object
 	} catch (err) {
 		console.log('error in getType : ' + err)
 	}
 }
 
+/**
+ * For a given Check Point host object, call out to the API via 'show-access-rule'
+ * @function getRule
+ * @param {json} myobj 
+ * @return The returned set of objects from the doPost callouts to the Check Point Management API
+ */
 async function getRule(myobj) {
 	try {
 		mycmd = 'show-access-rule'
         myobj['details-level'] = details
-        var setit = toApi.doPost(myobj, mycmd)
-        let indat = await callOut(setit.options, setit.postData)
-			//console.log(indat.object.type)
-		return await indat
+        var setit = toApi.doPost(myobj, mycmd)		
+        //let indat = await callOut(setit.options, setit.postData)
+		//console.log(indat.object.type)
+		//return await indat
+		return await callOut(setit.options, setit.postData)
 	} catch (err) {
 		console.log('error in getRule : ' + err)
 	}
 }
 
 /** 
+ * For a given array of Check Point objects, tag the objects for deletion and POST to the API
  * @function tagObjects 
  * @param {Object[]} myobj An array of tags to be added to a Check Point host object
  * @return {Object} Returns the session handler after tagging operations are concluded
@@ -455,13 +499,13 @@ async function tagObjects(myobj) {
 		tags.add = 'DELETE'
 		var mydata = {}
 		var myreturn = []
-                //mydata['details-level'] = details
-		for (var x in myobj) {
+        //mydata['details-level'] = details
+		for (var x in myobj) {	//For each object to be tagged
 			mydata.uid = myobj[x].uid
 			mydata.tags = tags
 			mycmd = 'set-' + myobj[x].type
-                	var setit = toApi.doPost(mydata, mycmd)
-                	let indat = await callOut(setit.options, setit.postData)
+			var setit = toApi.doPost(mydata, mycmd)
+			let indat = await callOut(setit.options, setit.postData)
 			//console.log(mycmd)
 			//console.log(mydata)
 			myreturn = myreturn.concat(indat)
@@ -474,7 +518,7 @@ async function tagObjects(myobj) {
 }
 
 /**
- * Given a set of objects returns by the Check Point API, 
+ * Given a set of objects returns by the Check Point Management API, 
  * @function doParse 
  * @param {*} objdat An array of objects where the parameter values were already found in policy
  * @return {Object[]} The parsed and prepared Check Point host object array
@@ -520,9 +564,8 @@ async function doParse(objdat) {
 		console.log('error in doParse : ' + err)
 	}
 }
-
-// pretty show json data to console
-/**
+/** 
+ * Colored version of the json output
  * @function showJson
  * @param {json} obj 
  * @return {json} A prettifed version of the json object using prettyjson library
@@ -536,7 +579,7 @@ async function showJson(obj) {
 }
 
 /**
- * Create an authenticated session with the Check Point API
+ * Create an authenticated session with the Check Point Management API
  * @function startSession 
  * @param {json} myauth Credentials used for API access
  * @return {Object} The prepared session handler
@@ -554,96 +597,92 @@ async function startSession(myauth) {
         }
 }
 
-// set session token to header
 /**
- * Set the session handler for a Check Point API connection
+ * Set the session token to the headeer for a Check Point Management API connection
  * @function setSession 
- * @param {Object} mysession A Check Point API session handler
+ * @param {Object} mysession A Check Point Management API session handler
+ * @return No value, returning instruction pointer back to the caller
  */
 async function setSession(mysession) {
-        try {
-                console.log('setting session')
-                toApi.setToken(mysession)
-                //toApi.showOpt()
-                return
-        } catch (err) {
-                console.log('error in setSession')
-                console.log(err)
-        }
+	try {
+		console.log('setting session')
+		toApi.setToken(mysession)
+		//toApi.showOpt()
+		return
+	} catch (err) {
+		console.log('error in setSession\n' + err)
+	}
 }
 
 /**
- * Publish data to the Check Point API via a callout to HTTP POST
+ * Publish data to the Check Point Management API via a callout to HTTP POST
  * @function pubSession 
- * @return {Object} mysession A Check Point API session handler
+ * @return {Object} mysession A Check Point Management API session handler
  */
 async function pubSession() {
-        try {
-                console.log('publishing session')
-		var mycmd = 'publish'
+	try {
+		console.log('publishing session')
+		var mycmd = 'publish'	//change command to publish
 		var nodata = {}
-                var mysession = await callOut(toApi.doPost(nodata, mycmd).options, toApi.doPost(nodata, mycmd).postData)
-               	//toApi.showOpt()
-		await sleep(3000)
-                return mysession
-        } catch (err) {
-                console.log('error in pubSession : ' + err)
-        }
+		var mysession = await callOut(toApi.doPost(nodata, mycmd).options, toApi.doPost(nodata, mycmd).postData)
+		//toApi.showOpt()
+		await sleep(3000)	//Self-imposed rate limiting, just wait...
+		return mysession
+	} catch (err) {
+		console.log('error in pubSession : ' + err)
+	}
 }
 
-
-// end session and expire token from header
 /**
- * Safely logout from the Check Point API
+ * Safely logout from the Check Point Management API, ending the session and expiring the token from header
  * @function endSession 
- * @return {Object} The completed Check Point API session handler
+ * @return {Object} The completed Check Point Management API session handler
  */
 async function endSession() {
-        try {
-                console.log('ending session')
+	try {
+		console.log('ending session')
 		var nodata = {}
-                var nosession = await callOut(toApi.doPost(nodata, 'logout').options, toApi.doPost(nodata, 'logout').postData)
-               	//toApi.showOpt()
-                return nosession
-        } catch (err) {
-                console.log('error in endSession : ' + err)
-        }
+		var nosession = await callOut(toApi.doPost(nodata, 'logout').options, toApi.doPost(nodata, 'logout').postData)
+		//toApi.showOpt()
+		return nosession
+	} catch (err) {
+		console.log('error in endSession : ' + err)
+	}
 }
 
-// go get the rest api data
 /**
- * 
- * @param {json} options 
- * @param {*} postData 
+ * With given options and HTTP POST data, continue HTTPS requests/resolve until the final response object is reached
+ * @function callOut
+ * @param {json} options JSON-formatted options to be sent to the Check Point Management API
+ * @param {*} postData Data to be POST'd against the API
+ * @return {*} Promised version of the data collected from the HTTPS callouts i.e. API object data
  */
 async function callOut(options, postData) {
     return new Promise((resolve, reject) => {
-            var req = https.request(options, (res) => {
-            var myret = ''
-                    if (res.statusCode > 200) {
-                    process.stdout.write(res.statusCode + ' : ' + res.statusMessage + ' ' + options.path);
-                    }
-                    res.on('data', (d) => {
-                            myret += d
-                    });
-                    res.on('end', () => {
-                            resolve(JSON.parse(myret))
-                    });
-            });
-            req.on('error', (e) => {
-                    reject(e);
-            });
-            if (postData) {
-                    req.write(postData);
-            }
-            req.end();
+		var req = https.request(options, (res) => {
+			var myret = ''
+			if (res.statusCode > 200)	//Anything but HTTP 200? Write out the error for review
+				process.stdout.write(res.statusCode + ' : ' + res.statusMessage + ' ' + options.path);
+			res.on('data', (d) => {		//More data in response, keep adding to myret
+				myret += d
+			});
+			res.on('end', () => {		//End of response, parse the returned data to JSON
+				resolve(JSON.parse(myret))
+			});
+		});
+		req.on('error', (e) => {
+			reject(e);
+		});
+		if (postData)
+			req.write(postData);
+		req.end();
     })
 }
 
-// save api output as json data to file
 /**
+ * Write json data passed out to file with a file named by given IP address :a.b.c.d.json"
  * @function writeJson
- * @param {json} content 
+ * @param {json} content JSON-formatted data to write to file
  */
 async function writeJson (content) {
         try {
@@ -661,7 +700,6 @@ async function writeJson (content) {
         }
 }
 
-// easy way to wait
 /**
  * Promise'd sleep function to account for API round trip delays
  * @function sleep 
@@ -673,8 +711,8 @@ function sleep(ms) {
 }
 
 /**
- * the number of keys in use for a given object
- * @function Count 
+ * Counts the number of keys in use for a given object
+ * @function countOf 
  * @param {Object} obj The object to be checked
  * @return {int} The number of keys in use
  */
