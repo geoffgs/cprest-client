@@ -15,5 +15,8 @@
   "dependencies": {
     "ip-utils": "^2.4.0",
     "prettyjson": "^1.2.1"
+  },
+  "devDependencies": {
+    "jsdoc": "^3.6.3"
   }
 }
