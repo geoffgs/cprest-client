@@ -23,8 +23,7 @@
 <dd><p>Traverse object collected in object</p>
 </dd>
 <dt><a href="#checkArgs">checkArgs()</a></dt>
-<dd><p>Perform a check against the command line arguments passed to the application
-Must be a list of 3 arguments with a quad-octet formatted IPv4 address</p>
+<dd><p>Perform a validation check against the command line arguments passed to the application.</p>
 </dd>
 <dt><a href="#main">main()</a></dt>
 <dd><p>Post parameter checks, run the program</p>
@@ -170,10 +169,14 @@ myval = get([uid, '0', 'used-directly', '0', 'total'], usedobj)
 <a name="checkArgs"></a>
 
 ## checkArgs()
-Perform a check against the command line arguments passed to the application
-Must be a list of 3 arguments with a quad-octet formatted IPv4 address
+Perform a validation check against the command line arguments passed to the application.
 
 **Kind**: global function  
+**Example**  
+```js
+Must be a list of three arguments with a quad-octet formatted IPv4 address
+$> node index 1.2.3.4
+```
 <a name="main"></a>
 
 ## main()

@@ -1,12 +1,6 @@
 /** 
  * cprest client access for API 
- * @module index
- * @requires fs
- * @requires https
- * @requires ip-utils From NMPJS.org
- * @requires ./auth/mycpapi.json A local config file
- * @requires ./auth./mycpsite.json A local config file
- * */
+ */
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 'use strict'
 const https = require('https')
@@ -62,7 +56,6 @@ const mycred = require('./auth/mycpauth')
 /**
  * Class Method for API callout builder
  * @class
- *
  */
 const CpApiClass = require('./cpclass')
 const toApi = new CpApiClass(myapisite.chkp)
@@ -96,9 +89,10 @@ var myfilename = 'dump'
 
 var nodata = {}
 /**
- * Perform a check against the command line arguments passed to the application
- * Must be a list of 3 arguments with a quad-octet formatted IPv4 address
+ * Perform a validation check against the command line arguments passed to the application. 
  * @function checkArgs
+ * @example Must be a list of three arguments with a quad-octet formatted IPv4 address
+ * $> node index 1.2.3.4
  */
 function checkArgs() {
 	try {
@@ -166,7 +160,6 @@ async function admins() {
  * @param {String} ip - IP address to search 
  * @returns {uid[]} UIDs of direct and indirect object usage
  */
-
 async function showObjects(mydata, mycmd) {
 	try {
 		var objdata = {}
