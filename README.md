@@ -1,51 +1,116 @@
-<a name="module_index"></a>
+## Classes
 
-## index
+<dl>
+<dt><a href="#CpApiClass">CpApiClass</a></dt>
+<dd></dd>
+</dl>
 
-* [index](#module_index)
-    * [~CpApiClass](#module_index..CpApiClass)
-        * [new CpApiClass()](#new_module_index..CpApiClass_new)
-    * [~myapisite](#module_index..myapisite)
-    * [~mycred](#module_index..mycred)
-    * [~get(getProps, usedobj)](#module_index..get)
-    * [~checkArgs()](#module_index..checkArgs)
-    * [~main()](#module_index..main)
-    * [~showObjects(ip)](#module_index..showObjects) ⇒ <code>Array.&lt;uid&gt;</code>
-    * [~checkObject(uid)](#module_index..checkObject) ⇒ <code>Array.&lt;uid&gt;</code>
-    * [~whereUsed(objarr)](#module_index..whereUsed) ⇒ <code>Array.&lt;Object&gt;</code>
-    * [~parseObjectUse(objdat)](#module_index..parseObjectUse) ⇒ <code>Array.&lt;Object&gt;</code>
-    * [~getObjectUse(isused)](#module_index..getObjectUse) ⇒ <code>Array.&lt;Object&gt;</code>
-    * [~getUsedObject(objarr)](#module_index..getUsedObject) ⇒ <code>Array.&lt;Object&gt;</code>
-    * [~getType(myobj)](#module_index..getType) ⇒
-    * [~getRule(myobj)](#module_index..getRule) ⇒
-    * [~tagObjects(myobj)](#module_index..tagObjects) ⇒ <code>Object</code>
-    * [~doParse(objdat)](#module_index..doParse) ⇒ <code>Array.&lt;Object&gt;</code>
-    * [~showJson(obj)](#module_index..showJson) ⇒ <code>json</code>
-    * [~startSession(myauth)](#module_index..startSession) ⇒ <code>Object</code>
-    * [~setSession(mysession)](#module_index..setSession) ⇒
-    * [~pubSession()](#module_index..pubSession) ⇒ <code>Object</code>
-    * [~endSession()](#module_index..endSession) ⇒ <code>Object</code>
-    * [~callOut(options, postData)](#module_index..callOut) ⇒ <code>\*</code>
-    * [~writeJson(content)](#module_index..writeJson)
-    * [~sleep(ms)](#module_index..sleep) ⇒ <code>Object</code>
-    * [~countOf(obj)](#module_index..countOf) ⇒ <code>int</code>
-    * [~uid](#module_index..uid) : <code>Array.&lt;Object&gt;</code>
+## Constants
 
-<a name="module_index..CpApiClass"></a>
+<dl>
+<dt><a href="#myapisite">myapisite</a></dt>
+<dd><p>Variable required from auth/mycpapi.json file</p>
+</dd>
+<dt><a href="#mycred">mycred</a></dt>
+<dd><p>Variable required from auth/mycpauth.json</p>
+</dd>
+</dl>
 
-### index~CpApiClass
-**Kind**: inner class of [<code>index</code>](#module_index)  
-<a name="new_module_index..CpApiClass_new"></a>
+## Functions
 
-#### new CpApiClass()
+<dl>
+<dt><a href="#get">get(getProps, usedobj)</a></dt>
+<dd><p>Traverse object collected in object</p>
+</dd>
+<dt><a href="#checkArgs">checkArgs()</a></dt>
+<dd><p>Perform a check against the command line arguments passed to the application
+Must be a list of 3 arguments with a quad-octet formatted IPv4 address</p>
+</dd>
+<dt><a href="#main">main()</a></dt>
+<dd><p>Post parameter checks, run the program</p>
+</dd>
+<dt><a href="#showObjects">showObjects(ip)</a> ⇒ <code><a href="#uid">Array.&lt;uid&gt;</a></code></dt>
+<dd><p>Check against the Check Point Management API for host object usage of a specific quad octet IPv4 address</p>
+</dd>
+<dt><a href="#checkObject">checkObject(uid)</a> ⇒ <code><a href="#uid">Array.&lt;uid&gt;</a></code></dt>
+<dd><p>Object verify IP matches filter</p>
+</dd>
+<dt><a href="#whereUsed">whereUsed(objarr)</a> ⇒ <code>Array.&lt;Object&gt;</code></dt>
+<dd><p>Determine where a set of objects is used in Check Point policies</p>
+</dd>
+<dt><a href="#parseObjectUse">parseObjectUse(objdat)</a> ⇒ <code>Array.&lt;Object&gt;</code></dt>
+<dd><p>For a given set of Check Point objects, search for direct object usage and parse group membership</p>
+</dd>
+<dt><a href="#getObjectUse">getObjectUse(isused)</a> ⇒ <code>Array.&lt;Object&gt;</code></dt>
+<dd><p>Determine where a set of objects is used in Check Point policies</p>
+</dd>
+<dt><a href="#getUsedObject">getUsedObject(objarr)</a> ⇒ <code>Array.&lt;Object&gt;</code></dt>
+<dd><p>Recursively discover the use of a host object against Check Point policy</p>
+</dd>
+<dt><a href="#getType">getType(myobj)</a> ⇒</dt>
+<dd><p>Given a Check Point UID, return the full set of object details via &#39;show-object&#39;</p>
+</dd>
+<dt><a href="#getRule">getRule(myobj)</a> ⇒</dt>
+<dd><p>For a given Check Point host object, call out to the API via &#39;show-access-rule&#39;</p>
+</dd>
+<dt><a href="#tagObjects">tagObjects(myobj)</a> ⇒ <code>Object</code></dt>
+<dd><p>For a given array of Check Point objects, tag the objects for deletion and POST to the API</p>
+</dd>
+<dt><a href="#doParse">doParse(objdat)</a> ⇒ <code>Array.&lt;Object&gt;</code></dt>
+<dd><p>Given a set of objects returns by the Check Point Management API,</p>
+</dd>
+<dt><a href="#showJson">showJson(obj)</a> ⇒ <code>json</code></dt>
+<dd><p>Colored version of the json output</p>
+</dd>
+<dt><a href="#startSession">startSession(myauth)</a> ⇒ <code>Object</code></dt>
+<dd><p>Create an authenticated session with the Check Point Management API</p>
+</dd>
+<dt><a href="#setSession">setSession(mysession)</a> ⇒</dt>
+<dd><p>Set the session token to the headeer for a Check Point Management API connection</p>
+</dd>
+<dt><a href="#pubSession">pubSession()</a> ⇒ <code>Object</code></dt>
+<dd><p>Publish data to the Check Point Management API via a callout to HTTP POST</p>
+</dd>
+<dt><a href="#endSession">endSession()</a> ⇒ <code>Object</code></dt>
+<dd><p>Safely logout from the Check Point Management API, ending the session and expiring the token from header</p>
+</dd>
+<dt><a href="#callOut">callOut(options, postData)</a> ⇒ <code>*</code></dt>
+<dd><p>With given options and HTTP POST data, continue HTTPS requests/resolve until the final response object is reached</p>
+</dd>
+<dt><a href="#writeJson">writeJson(content)</a></dt>
+<dd><p>Write json data passed out to file with a file named by given IP address :a.b.c.d.json&quot;</p>
+</dd>
+<dt><a href="#sleep">sleep(ms)</a> ⇒ <code>Object</code></dt>
+<dd><p>Promise&#39;d sleep function to account for API round trip delays</p>
+</dd>
+<dt><a href="#countOf">countOf(obj)</a> ⇒ <code>int</code></dt>
+<dd><p>Counts the number of keys in use for a given object</p>
+</dd>
+</dl>
+
+## Typedefs
+
+<dl>
+<dt><a href="#uid">uid</a> : <code>Array.&lt;Object&gt;</code></dt>
+<dd><p>where-used returned data format</p>
+</dd>
+</dl>
+
+<a name="CpApiClass"></a>
+
+## CpApiClass
+**Kind**: global class  
+<a name="new_CpApiClass_new"></a>
+
+### new CpApiClass()
 Class Method for API callout builder
 
-<a name="module_index..myapisite"></a>
+<a name="myapisite"></a>
 
-### index~myapisite
+## myapisite
 Variable required from auth/mycpapi.json file
 
-**Kind**: inner constant of [<code>index</code>](#module_index)  
+**Kind**: global constant  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -67,12 +132,12 @@ create auth/mycpapi.json file
 	}
 }
 ```
-<a name="module_index..mycred"></a>
+<a name="mycred"></a>
 
-### index~mycred
+## mycred
 Variable required from auth/mycpauth.json
 
-**Kind**: inner constant of [<code>index</code>](#module_index)  
+**Kind**: global constant  
 **Params**: <code>Object</code> credentials - auth/mycpauth.json  
 **Example**  
 ```js
@@ -82,12 +147,12 @@ create auth/mycpauth.json file
 		"password": "PASSWORD"
 }
 ```
-<a name="module_index..get"></a>
+<a name="get"></a>
 
-### index~get(getProps, usedobj)
+## get(getProps, usedobj)
 Traverse object collected in object
 
-**Kind**: inner method of [<code>index</code>](#module_index)  
+**Kind**: global function  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -102,195 +167,195 @@ myres = myres.concat(get([uid, '0', 'used-directly', '0', 'access-conrol-rules']
 Or get a specific value, like the total count from the API:
 myval = get([uid, '0', 'used-directly', '0', 'total'], usedobj)
 ```
-<a name="module_index..checkArgs"></a>
+<a name="checkArgs"></a>
 
-### index~checkArgs()
+## checkArgs()
 Perform a check against the command line arguments passed to the application
 Must be a list of 3 arguments with a quad-octet formatted IPv4 address
 
-**Kind**: inner method of [<code>index</code>](#module_index)  
-<a name="module_index..main"></a>
+**Kind**: global function  
+<a name="main"></a>
 
-### index~main()
+## main()
 Post parameter checks, run the program
 
-**Kind**: inner method of [<code>index</code>](#module_index)  
-<a name="module_index..showObjects"></a>
+**Kind**: global function  
+<a name="showObjects"></a>
 
-### index~showObjects(ip) ⇒ <code>Array.&lt;uid&gt;</code>
+## showObjects(ip) ⇒ [<code>Array.&lt;uid&gt;</code>](#uid)
 Check against the Check Point Management API for host object usage of a specific quad octet IPv4 address
 
-**Kind**: inner method of [<code>index</code>](#module_index)  
-**Returns**: <code>Array.&lt;uid&gt;</code> - UIDs of direct and indirect object usage  
+**Kind**: global function  
+**Returns**: [<code>Array.&lt;uid&gt;</code>](#uid) - UIDs of direct and indirect object usage  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | ip | <code>String</code> | IP address to search |
 
-<a name="module_index..checkObject"></a>
+<a name="checkObject"></a>
 
-### index~checkObject(uid) ⇒ <code>Array.&lt;uid&gt;</code>
+## checkObject(uid) ⇒ [<code>Array.&lt;uid&gt;</code>](#uid)
 Object verify IP matches filter
 
-**Kind**: inner method of [<code>index</code>](#module_index)  
-**Returns**: <code>Array.&lt;uid&gt;</code> - -  array of safe UID's to verify usage against  
+**Kind**: global function  
+**Returns**: [<code>Array.&lt;uid&gt;</code>](#uid) - -  array of safe UID's to verify usage against  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | uid | <code>Array.&lt;String&gt;</code> | UID to verify IP address filter |
 
-<a name="module_index..whereUsed"></a>
+<a name="whereUsed"></a>
 
-### index~whereUsed(objarr) ⇒ <code>Array.&lt;Object&gt;</code>
+## whereUsed(objarr) ⇒ <code>Array.&lt;Object&gt;</code>
 Determine where a set of objects is used in Check Point policies
 
-**Kind**: inner method of [<code>index</code>](#module_index)  
+**Kind**: global function  
 **Returns**: <code>Array.&lt;Object&gt;</code> - An array of objects where the parameter values were found in policy  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | objarr | <code>Array.&lt;Object&gt;</code> | Any array of objects containing filter values by UID |
 
-<a name="module_index..parseObjectUse"></a>
+<a name="parseObjectUse"></a>
 
-### index~parseObjectUse(objdat) ⇒ <code>Array.&lt;Object&gt;</code>
+## parseObjectUse(objdat) ⇒ <code>Array.&lt;Object&gt;</code>
 For a given set of Check Point objects, search for direct object usage and parse group membership
 
-**Kind**: inner method of [<code>index</code>](#module_index)  
+**Kind**: global function  
 **Returns**: <code>Array.&lt;Object&gt;</code> - An array of Check Point objects per given UIDs  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | objdat | <code>Array.&lt;Object&gt;</code> | Array of Check Point objects |
 
-<a name="module_index..getObjectUse"></a>
+<a name="getObjectUse"></a>
 
-### index~getObjectUse(isused) ⇒ <code>Array.&lt;Object&gt;</code>
+## getObjectUse(isused) ⇒ <code>Array.&lt;Object&gt;</code>
 Determine where a set of objects is used in Check Point policies
 
-**Kind**: inner method of [<code>index</code>](#module_index)  
+**Kind**: global function  
 **Returns**: <code>Array.&lt;Object&gt;</code> - An array of objects where the parameter values were found in policy  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | isused | <code>Array.&lt;Object&gt;</code> | An Check Point host object array prepared by doParse |
 
-<a name="module_index..getUsedObject"></a>
+<a name="getUsedObject"></a>
 
-### index~getUsedObject(objarr) ⇒ <code>Array.&lt;Object&gt;</code>
+## getUsedObject(objarr) ⇒ <code>Array.&lt;Object&gt;</code>
 Recursively discover the use of a host object against Check Point policy
 
-**Kind**: inner method of [<code>index</code>](#module_index)  
+**Kind**: global function  
 **Returns**: <code>Array.&lt;Object&gt;</code> - An array of objects where the parameter values were found in policy  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | objarr | <code>Array.&lt;Object&gt;</code> | An Check Point object |
 
-<a name="module_index..getType"></a>
+<a name="getType"></a>
 
-### index~getType(myobj) ⇒
+## getType(myobj) ⇒
 Given a Check Point UID, return the full set of object details via 'show-object'
 
-**Kind**: inner method of [<code>index</code>](#module_index)  
+**Kind**: global function  
 **Returns**: The full details version of the Check Point object returned from the API call out  
 
 | Param | Type |
 | --- | --- |
-| myobj | <code>uid</code> | 
+| myobj | [<code>uid</code>](#uid) | 
 
-<a name="module_index..getRule"></a>
+<a name="getRule"></a>
 
-### index~getRule(myobj) ⇒
+## getRule(myobj) ⇒
 For a given Check Point host object, call out to the API via 'show-access-rule'
 
-**Kind**: inner method of [<code>index</code>](#module_index)  
+**Kind**: global function  
 **Returns**: The returned set of objects from the doPost callouts to the Check Point Management API  
 
 | Param | Type |
 | --- | --- |
 | myobj | <code>json</code> | 
 
-<a name="module_index..tagObjects"></a>
+<a name="tagObjects"></a>
 
-### index~tagObjects(myobj) ⇒ <code>Object</code>
+## tagObjects(myobj) ⇒ <code>Object</code>
 For a given array of Check Point objects, tag the objects for deletion and POST to the API
 
-**Kind**: inner method of [<code>index</code>](#module_index)  
+**Kind**: global function  
 **Returns**: <code>Object</code> - Returns the session handler after tagging operations are concluded  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | myobj | <code>Array.&lt;Object&gt;</code> | An array of tags to be added to a Check Point host object |
 
-<a name="module_index..doParse"></a>
+<a name="doParse"></a>
 
-### index~doParse(objdat) ⇒ <code>Array.&lt;Object&gt;</code>
+## doParse(objdat) ⇒ <code>Array.&lt;Object&gt;</code>
 Given a set of objects returns by the Check Point Management API,
 
-**Kind**: inner method of [<code>index</code>](#module_index)  
+**Kind**: global function  
 **Returns**: <code>Array.&lt;Object&gt;</code> - The parsed and prepared Check Point host object array  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | objdat | <code>\*</code> | An array of objects where the parameter values were already found in policy |
 
-<a name="module_index..showJson"></a>
+<a name="showJson"></a>
 
-### index~showJson(obj) ⇒ <code>json</code>
+## showJson(obj) ⇒ <code>json</code>
 Colored version of the json output
 
-**Kind**: inner method of [<code>index</code>](#module_index)  
+**Kind**: global function  
 **Returns**: <code>json</code> - A prettifed version of the json object using prettyjson library  
 
 | Param | Type |
 | --- | --- |
 | obj | <code>json</code> | 
 
-<a name="module_index..startSession"></a>
+<a name="startSession"></a>
 
-### index~startSession(myauth) ⇒ <code>Object</code>
+## startSession(myauth) ⇒ <code>Object</code>
 Create an authenticated session with the Check Point Management API
 
-**Kind**: inner method of [<code>index</code>](#module_index)  
+**Kind**: global function  
 **Returns**: <code>Object</code> - The prepared session handler  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | myauth | <code>json</code> | Credentials used for API access |
 
-<a name="module_index..setSession"></a>
+<a name="setSession"></a>
 
-### index~setSession(mysession) ⇒
+## setSession(mysession) ⇒
 Set the session token to the headeer for a Check Point Management API connection
 
-**Kind**: inner method of [<code>index</code>](#module_index)  
+**Kind**: global function  
 **Returns**: No value, returning instruction pointer back to the caller  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | mysession | <code>Object</code> | A Check Point Management API session handler |
 
-<a name="module_index..pubSession"></a>
+<a name="pubSession"></a>
 
-### index~pubSession() ⇒ <code>Object</code>
+## pubSession() ⇒ <code>Object</code>
 Publish data to the Check Point Management API via a callout to HTTP POST
 
-**Kind**: inner method of [<code>index</code>](#module_index)  
+**Kind**: global function  
 **Returns**: <code>Object</code> - mysession A Check Point Management API session handler  
-<a name="module_index..endSession"></a>
+<a name="endSession"></a>
 
-### index~endSession() ⇒ <code>Object</code>
+## endSession() ⇒ <code>Object</code>
 Safely logout from the Check Point Management API, ending the session and expiring the token from header
 
-**Kind**: inner method of [<code>index</code>](#module_index)  
+**Kind**: global function  
 **Returns**: <code>Object</code> - The completed Check Point Management API session handler  
-<a name="module_index..callOut"></a>
+<a name="callOut"></a>
 
-### index~callOut(options, postData) ⇒ <code>\*</code>
+## callOut(options, postData) ⇒ <code>\*</code>
 With given options and HTTP POST data, continue HTTPS requests/resolve until the final response object is reached
 
-**Kind**: inner method of [<code>index</code>](#module_index)  
+**Kind**: global function  
 **Returns**: <code>\*</code> - Promised version of the data collected from the HTTPS callouts i.e. API object data  
 
 | Param | Type | Description |
@@ -298,47 +363,47 @@ With given options and HTTP POST data, continue HTTPS requests/resolve until the
 | options | <code>json</code> | JSON-formatted options to be sent to the Check Point Management API |
 | postData | <code>\*</code> | Data to be POST'd against the API |
 
-<a name="module_index..writeJson"></a>
+<a name="writeJson"></a>
 
-### index~writeJson(content)
+## writeJson(content)
 Write json data passed out to file with a file named by given IP address :a.b.c.d.json"
 
-**Kind**: inner method of [<code>index</code>](#module_index)  
+**Kind**: global function  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | content | <code>json</code> | JSON-formatted data to write to file |
 
-<a name="module_index..sleep"></a>
+<a name="sleep"></a>
 
-### index~sleep(ms) ⇒ <code>Object</code>
+## sleep(ms) ⇒ <code>Object</code>
 Promise'd sleep function to account for API round trip delays
 
-**Kind**: inner method of [<code>index</code>](#module_index)  
+**Kind**: global function  
 **Returns**: <code>Object</code> - The completed promise after x time has passed  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | ms | <code>int</code> | Number of milliseconds to sleep  by |
 
-<a name="module_index..countOf"></a>
+<a name="countOf"></a>
 
-### index~countOf(obj) ⇒ <code>int</code>
+## countOf(obj) ⇒ <code>int</code>
 Counts the number of keys in use for a given object
 
-**Kind**: inner method of [<code>index</code>](#module_index)  
+**Kind**: global function  
 **Returns**: <code>int</code> - The number of keys in use  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | obj | <code>Object</code> | The object to be checked |
 
-<a name="module_index..uid"></a>
+<a name="uid"></a>
 
-### index~uid : <code>Array.&lt;Object&gt;</code>
+## uid : <code>Array.&lt;Object&gt;</code>
 where-used returned data format
 
-**Kind**: inner typedef of [<code>index</code>](#module_index)  
+**Kind**: global typedef  
 **Properties**
 
 | Name | Type | Description |
