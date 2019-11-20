@@ -1,9 +1,6 @@
 <a name="module_index"></a>
 
 ## index
-cprest client access for API
-
-**Requires**: <code>module:fs</code>, <code>module:https</code>, <code>module:ip-utils</code>, <code>module:./auth/mycpapi.json</code>, <code>module:./auth./mycpsite.json</code>  
 
 * [index](#module_index)
     * [~CpApiClass](#module_index..CpApiClass)
