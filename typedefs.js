@@ -1,12 +1,12 @@
 /**
- * @module typedefs
+ * @module cp_objects
  */
  
 /**
  * Check Point Management API standard-details host object format 
  * @typedef {Object} uid_obj
  * @property {string} uid Object unique identifier.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
 /**
@@ -15,7 +15,8 @@
  * @property {string} name Object name. Should be unique in the domain.
  * @property {string} uid Object unique identifier.
  * @property {string} type Type of the object.
- * @memberof typedefs
+ * @memberof cp_objects
+ * @name host_obj
  */
 
  /**
@@ -27,7 +28,7 @@
  * @property {domain_obj} domain Information about the domain the object belongs to.
  * @property {string} ipv4-address IPv4 host address.
  * @property {string} ipv6-address IPv6 host address.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
  /**
@@ -39,7 +40,7 @@
  * @property {domain_obj} domain Information about the domain the object belongs to.
  * @property {group_std[]} groups How much details are returned depends on the details-level field of the request.
  * @property {string} icon Object icon.
- * @property {interfaces[]} interfaces Host interfaces.
+ * @property {interfaces[]} interfaces Host interfaces.  
  * @property {string} ipv4-address IPv4 host address.
  * @property {string} ipv6-address IPv6 host address.
  * @property {meta_info} meta-info Object metadata.
@@ -49,7 +50,7 @@
  * @property {host_servers} host-servers Servers Configuration.
  * @property {string} color Color of the object. Should be one of existing colors.
  * @property {string} comments Comments string.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
  /**
@@ -59,7 +60,7 @@
  * @property {host_std[]} objects List of objects in the range
  * @property {number} to To which element number the query was done.
  * @property {number} total Total number of elements returned by the query.
- * @memberof typedefs
+ * @memberof cp_objects
  */ 
 
   /**
@@ -69,7 +70,7 @@
  * @property {host_full[]} objects List of objects in the range
  * @property {number} to To which element number the query was done.
  * @property {number} total Total number of elements returned by the query.
- * @memberof typedefs
+ * @memberof cp_objects
  */ 
 
  /**
@@ -79,7 +80,7 @@
  * @property {host_std[]} objects List of objects in the range
  * @property {number} to To which element number the query was done.
  * @property {number} total Total number of elements returned by the query.
- * @memberof typedefs
+ * @memberof cp_objects
  */ 
 
   /**
@@ -89,7 +90,7 @@
  * @property {host_full[]} objects List of objects in the range
  * @property {number} to To which element number the query was done.
  * @property {number} total Total number of elements returned by the query.
- * @memberof typedefs
+ * @memberof cp_objects
  */ 
 
  /**
@@ -98,7 +99,7 @@
  * @property {string} name Object name. Should be unique in the domain.
  * @property {string} uid Object unique identifier.
  * @property {string} domain-type Domain type. Optional arguments: mds, data domain, domain, global domain
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
   /**
@@ -110,7 +111,7 @@
  * @property {string} operating-system Optional arguments: sparc linux, windows, other, x86 linux, sparc solaris
  * @property {string} protected-by Network object which protects this server identified by the name or UID.
  * @property {number} standard-port-number Server standard port number.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
 /**
@@ -120,7 +121,7 @@
  * @property {boolean} mail-server Gets True if this server is a Mail Server.
  * @property {boolean} web-server Gets True if this server is a Web Server.
  * @property {web_srv_conf} Web Server configuration.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
  /**
@@ -139,7 +140,7 @@
  * @property {tag_std[]} tags Collection of tag objects identified by the name or UID.
  * @property {string} color Color of the object. Should be one of existing colors.
  * @property {string} comments Comments string.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
  /**
@@ -158,7 +159,7 @@
  * @property {tag_full[]} tags Collection of tag objects identified by the name or UID.
  * @property {string} color Color of the object. Should be one of existing colors.
  * @property {string} comments Comments string.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
  /**
@@ -168,7 +169,7 @@
  * @property {group_std[]} objects List of objects in the range
  * @property {number} to To which element number the query was done.
  * @property {number} total Total number of elements returned by the query.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
 /**
@@ -178,7 +179,7 @@
  * @property {group_full[]} objects List of objects in the range
  * @property {number} to To which element number the query was done.
  * @property {number} total Total number of elements returned by the query.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
  /**
@@ -188,7 +189,7 @@
  * @property {range_std[]} objects List of objects in the range
  * @property {number} to To which element number the query was done.
  * @property {number} total Total number of elements returned by the query.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
 /**
@@ -198,7 +199,7 @@
  * @property {range_full[]} objects List of objects in the range
  * @property {number} to To which element number the query was done.
  * @property {number} total Total number of elements returned by the query.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
 /**
@@ -206,7 +207,7 @@
  * @typedef {Object} range_base_std
  * @property {ip_base} ipv4 Range of IPv4 addresses that match in the given rule.
  * @property {ip_base} ipv6 Range of IPv6 addresses that match in the given rule.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
 /**
@@ -220,7 +221,7 @@
  * Check Point Management API standard-details range object format from 'show address-ranges' 
  * @typedef {Object} range_base_uid
  * @property {string} uid Object unique identifier.
- * @memberof typedefs
+ * @memberof cp_objects
  */ 
 
 /**
@@ -234,7 +235,7 @@
  * @property {string} ipv4-address-last Last IPv4 address in the range.
  * @property {string} ipv6-address-first First IPv6 address in the range.
  * @property {string} ipv6-address-last Last IPv9 address in the range.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
 /**
@@ -256,7 +257,7 @@
  * @property {tag_full[]} tags Collection of tag objects identified by the name or UID.
  * @property {string} color Color of the object. Should be one of existing colors.
  * @property {string} comments Comments string.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
  /**
@@ -268,7 +269,7 @@
  * @property {string} ipv4-address IPv4 host address.
  * @property {string} ipv6-address IPv6 host address.
  * @property {string} method NAT translation method. Optional values: hide, static
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
 /**
@@ -280,7 +281,7 @@
  * @property {timestamp} last-modify-time 
  * @property {string} lock Object lock state. It's not allowed to edit objects locked by other session.
  * @property {string} validation-state Oprtional arguments of: ok, info, warning, error
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
 /**
@@ -288,7 +289,7 @@
  * @typedef {Object} timestamp 
  * @property {string} iso-8601 Date and time represented in international ISO 8601 format.
  * @property {number} posix Number of milliseconds that have elapsed since 00:00:00, 1 January 1970.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
  /**
@@ -298,13 +299,13 @@
  * @property {string} uid Object unique identifier.
  * @property {string} type Type of the object.
  * @property {domain_obj} domain Information about the domain the object belongs to.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
 /**
  * Check Point Management API members object format 
  * @typedef {std_obj} group_std
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
  /**
@@ -322,7 +323,7 @@
  * @property {meta_info} meta-info Object metadata.
  * @property {boolean} read-only Indicates whether the object is read-only.
  * @property {tag_std[]} tags Collection of tag objects identified by the name or UID.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
  /**
@@ -340,13 +341,13 @@
  * @property {meta_info} meta-info Object metadata.
  * @property {boolean} read-only Indicates whether the object is read-only.
  * @property {tag_full[]} tags Collection of tag objects identified by the name or UID.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
 /**
  * Check Point Management API standard-details tags object format from 'show tag'
  * @typedef {std_obj} tag_std
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
 /**
@@ -362,7 +363,7 @@
  * @property {tag_std[]} tags Collection of tag objects identified by the name or UID.
  * @property {string} color Color of the object. Should be one of existing colors.
  * @property {string} comments Comments string.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
 /**
@@ -372,7 +373,7 @@
 * @property {tag_std[]} objects Array of tag objects 
 * @property {number} to To which element number the query was done.
 * @property {number} total Total number of elements returned by the query.
-* @memberof typedefs
+* @memberof cp_objects
 */ 
 
 /**
@@ -382,7 +383,7 @@
 * @property {tag_std[]} objects Array of tag objects 
 * @property {number} to To which element number the query was done.
 * @property {number} total Total number of elements returned by the query.
-* @memberof typedefs
+* @memberof cp_objects
 */ 
 
 /**
@@ -392,7 +393,7 @@
  * @property {access_role_std[]} objects List of objects in the range
  * @property {number} to To which element number the query was done.
  * @property {number} total Total number of elements returned by the query.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
 /**
@@ -402,7 +403,7 @@
  * @property {access_role_full[]} objects List of objects in the range
  * @property {number} to To which element number the query was done.
  * @property {number} total Total number of elements returned by the query.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
 
@@ -423,7 +424,7 @@
  * @property {std_obj[]} users Users that can access the system. 
  * @property {string} color Color of the object. Should be one of existing colors.
  * @property {string} comments Comments string.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
 /** 
@@ -440,7 +441,7 @@
  * @property {tag_std[]} tags Collection of tag objects identified by the name or UID
  * @property {string} color Color of the object. Should be one of existing colors.
  * @property {string} comments Comments string.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
  /**
@@ -450,7 +451,7 @@
  * @property {security_zone_std[]} objects List of objects in the range
  * @property {number} to To which element number the query was done.
  * @property {number} total Total number of elements returned by the query.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
 /** 
@@ -474,7 +475,7 @@
  * @property {tag_std[]} tags Collection of tag objects identified by the name or UID
  * @property {string} color Color of the object. Should be one of existing colors.
  * @property {string} comments Comments string.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
  /**
@@ -484,7 +485,7 @@
  * @property {access_layer_std[]} objects List of objects in the range
  * @property {number} to To which element number the query was done.
  * @property {number} total Total number of elements returned by the query.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
  /**
@@ -492,7 +493,7 @@
  * @typedef {Object} msg_obj
  * @property {boolean} current-session Validation related to the current session.
  * @property {string} message Validation message.
- * @memberof typedefs
+ * @memberof cp_objects
   */
 
 /**
@@ -503,7 +504,7 @@
  * @property {msg_obj} errors Validation Errors warnings.
  * @property {msg_obj} blocking-errors Blocking validation errors.
  * @property {string} code Error code, includes optional arguments relating to specific error
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
  /**
@@ -515,7 +516,7 @@
  * @property {number} errors-total Total number of error validations.
  * @property {msg_obj} blocking-errors Blocking validation errors.
  * @property {number} warnings-total Total number of blocking error validations.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
 /** 
@@ -526,7 +527,7 @@
  * @property {std_obj[]} access-control-rules Usage in objects.
  * @property {std_obj[]} nat-rules Usage in objects.
  * @property {std_obj[]} threat-prevention-rules Usage in objects.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
  /** 
@@ -537,7 +538,7 @@
  * @property {uid_obj[]} access-control-rules Usage in objects.
  * @property {uid_obj[]} nat-rules Usage in objects.
  * @property {uid_obj[]} threat-prevention-rules Usage in objects.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
 /** 
@@ -545,7 +546,7 @@
  * @typedef {Object} where_used_std
  * @property {rule_obj_std[]} used-directly Direct usage of the object.
  * @property {rule_obj_std[]} used-indirectly Indirect usage of the object.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
 /** 
@@ -553,7 +554,7 @@
  * @typedef {Object} where_used_uid
  * @property {rule_obj_uid[]} used-directly Direct usage of the object.
  * @property {rule_obj_uid[]} used-indirectly Indirect usage of the object.
- * @memberof typedefs
+ * @memberof cp_objects
  * @example 
  * { ip: [
  *        {
@@ -583,14 +584,14 @@
  * Check Point Management API standard-details object returned from 'show object'
  * @typedef {Object} show_obj_std
  * @property {std_obj[]} object The basic, 4-field object 
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
 /** 
  * Check Point Management API uid-details object returned from 'show object'
  * @typedef {Object} show_obj_uid
  * @property {uid_obj[]} object Array of UIDs
- * @memberof typedefs
+ * @memberof cp_objects
  */
  
  /** 
@@ -598,7 +599,7 @@
  * @typedef {Object} order_obj
  * @property {string} ASC Sorts results by the given field in ascending order, by object name field
  * @property {string} DESC Sorts results by the given field in ascending order, by object name field
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
 /** 
@@ -622,7 +623,7 @@
  * @property {show_obj_std[]} objects List of objects in the range
  * @property {number} to To which element number the query was done.
  * @property {number} total Total number of elements returned by the query.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
 /**
@@ -632,7 +633,7 @@
  * @property {show_obj_uid[]} objects List of objects in the range
  * @property {number} to To which element number the query was done.
  * @property {number} total Total number of elements returned by the query.
- * @memberof typedefs
+ * @memberof cp_objects
  */
 
 
@@ -641,7 +642,7 @@
 *  @typedef {Object} json
 *  @property {string} {*}
 *  @property {string} {*}
-*  @memberof typedefs
+*  @memberof cp_objects
 */ 
  
 

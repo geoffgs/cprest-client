@@ -26,19 +26,31 @@
 <dd><p>Perform a validation check against the command line arguments passed to the application.</p>
 </dd>
 <dt><a href="#main">main()</a></dt>
-<dd><p>Post parameter checks, run the program</p>
+<dd><p>After parameter checks, run the program</p>
 </dd>
-<dt><a href="#showObjects">showObjects(ip)</a> ⇒ <code><a href="#uid">Array.&lt;uid&gt;</a></code></dt>
-<dd><p>Check against the Check Point Management API for host object usage of a specific quad octet IPv4 address</p>
+<dt><a href="#admins">admins()</a></dt>
+<dd><p>Administrative functionality for safety checking</p>
 </dd>
-<dt><a href="#checkObject">checkObject(uid)</a> ⇒ <code><a href="#uid">Array.&lt;uid&gt;</a></code></dt>
-<dd><p>Object verify IP matches filter</p>
+<dt><a href="#showObjects">showObjects(mydata, mycmd)</a> ⇒ <code>Array.&lt;cp_objects.show_objects_uid&gt;</code></dt>
+<dd><p>Given a string of object data, POST to the &#39;show object&#39; function</p>
 </dd>
-<dt><a href="#whereUsed">whereUsed(objarr)</a> ⇒ <code>Array.&lt;Object&gt;</code></dt>
+<dt><a href="#checkObjects">checkObjects(uid)</a> ⇒ <code>Array.&lt;cp_objects.show_objects_uid&gt;</code></dt>
+<dd><p>Given the return values from showObjects</p>
+</dd>
+<dt><a href="#whereUsed">whereUsed(objarr)</a> ⇒ <code>Array.&lt;cp_objects.where_used_uid&gt;</code></dt>
 <dd><p>Determine where a set of objects is used in Check Point policies</p>
 </dd>
 <dt><a href="#parseObjectUse">parseObjectUse(objdat)</a> ⇒ <code>Array.&lt;Object&gt;</code></dt>
 <dd><p>For a given set of Check Point objects, search for direct object usage and parse group membership</p>
+</dd>
+<dt><a href="#parseRuleUse">parseRuleUse(objdat)</a> ⇒ <code>Array.&lt;Object&gt;</code></dt>
+<dd><p>For a given set of Check Point host objects, search for their use in the rulebase from &#39;show access-rule&#39;</p>
+</dd>
+<dt><a href="#parseNatUse">parseNatUse(objdat)</a> ⇒ <code>Array.&lt;Object&gt;</code></dt>
+<dd><p>Any host object in a NAT rule is consdiered out-of-scope, mark these rules as &quot;garbage&quot;</p>
+</dd>
+<dt><a href="#parseThreatUse">parseThreatUse(objdat)</a> ⇒ <code>Array.&lt;Object&gt;</code></dt>
+<dd><p>Any host object in a Threat Prevention rule is consdiered out-of-scope, mark these rules as &quot;garbage&quot;</p>
 </dd>
 <dt><a href="#getObjectUse">getObjectUse(isused)</a> ⇒ <code>Array.&lt;Object&gt;</code></dt>
 <dd><p>Determine where a set of objects is used in Check Point policies</p>
@@ -56,9 +68,9 @@
 <dd><p>For a given array of Check Point objects, tag the objects for deletion and POST to the API</p>
 </dd>
 <dt><a href="#doParse">doParse(objdat)</a> ⇒ <code>Array.&lt;Object&gt;</code></dt>
-<dd><p>Given a set of objects returns by the Check Point Management API,</p>
+<dd><p>Given a set of objects returns by the Check Point Management API, create the array of host objects elligible for deleition</p>
 </dd>
-<dt><a href="#showJson">showJson(obj)</a> ⇒ <code>json</code></dt>
+<dt><a href="#showJson">showJson(obj)</a> ⇒ <code>Object</code></dt>
 <dd><p>Colored version of the json output</p>
 </dd>
 <dt><a href="#startSession">startSession(myauth)</a> ⇒ <code>Object</code></dt>
@@ -82,16 +94,8 @@
 <dt><a href="#sleep">sleep(ms)</a> ⇒ <code>Object</code></dt>
 <dd><p>Promise&#39;d sleep function to account for API round trip delays</p>
 </dd>
-<dt><a href="#countOf">countOf(obj)</a> ⇒ <code>int</code></dt>
+<dt><a href="#countOf">countOf(obj)</a> ⇒ <code>Number</code></dt>
 <dd><p>Counts the number of keys in use for a given object</p>
-</dd>
-</dl>
-
-## Typedefs
-
-<dl>
-<dt><a href="#uid">uid</a> : <code>Array.&lt;Object&gt;</code></dt>
-<dd><p>where-used returned data format</p>
 </dd>
 </dl>
 
@@ -180,44 +184,51 @@ $> node index 1.2.3.4
 <a name="main"></a>
 
 ## main()
-Post parameter checks, run the program
+After parameter checks, run the program
+
+**Kind**: global function  
+<a name="admins"></a>
+
+## admins()
+Administrative functionality for safety checking
 
 **Kind**: global function  
 <a name="showObjects"></a>
 
-## showObjects(ip) ⇒ [<code>Array.&lt;uid&gt;</code>](#uid)
-Check against the Check Point Management API for host object usage of a specific quad octet IPv4 address
+## showObjects(mydata, mycmd) ⇒ <code>Array.&lt;cp\_objects.show\_objects\_uid&gt;</code>
+Given a string of object data, POST to the 'show object' function
 
 **Kind**: global function  
-**Returns**: [<code>Array.&lt;uid&gt;</code>](#uid) - UIDs of direct and indirect object usage  
+**Returns**: <code>Array.&lt;cp\_objects.show\_objects\_uid&gt;</code> - UIDs of direct and indirect object usage  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| ip | <code>String</code> | IP address to search |
+| mydata | <code>string</code> |  |
+| mycmd | <code>string</code> | Command for mgmt API |
 
-<a name="checkObject"></a>
+<a name="checkObjects"></a>
 
-## checkObject(uid) ⇒ [<code>Array.&lt;uid&gt;</code>](#uid)
-Object verify IP matches filter
+## checkObjects(uid) ⇒ <code>Array.&lt;cp\_objects.show\_objects\_uid&gt;</code>
+Given the return values from showObjects
 
 **Kind**: global function  
-**Returns**: [<code>Array.&lt;uid&gt;</code>](#uid) - -  array of safe UID's to verify usage against  
+**Returns**: <code>Array.&lt;cp\_objects.show\_objects\_uid&gt;</code> - An Array of objects that match the filter  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| uid | <code>Array.&lt;String&gt;</code> | UID to verify IP address filter |
+| uid | <code>cp\_objects.show\_objects\_uid</code> | UID to verify IP address filter |
 
 <a name="whereUsed"></a>
 
-## whereUsed(objarr) ⇒ <code>Array.&lt;Object&gt;</code>
+## whereUsed(objarr) ⇒ <code>Array.&lt;cp\_objects.where\_used\_uid&gt;</code>
 Determine where a set of objects is used in Check Point policies
 
 **Kind**: global function  
-**Returns**: <code>Array.&lt;Object&gt;</code> - An array of objects where the parameter values were found in policy  
+**Returns**: <code>Array.&lt;cp\_objects.where\_used\_uid&gt;</code> - An array of objects where the parameter values were found in policy  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| objarr | <code>Array.&lt;Object&gt;</code> | Any array of objects containing filter values by UID |
+| objarr | <code>Array.&lt;cp\_objects.uid\_obj&gt;</code> | Any array of objects containing filter values by UID |
 
 <a name="parseObjectUse"></a>
 
@@ -225,11 +236,47 @@ Determine where a set of objects is used in Check Point policies
 For a given set of Check Point objects, search for direct object usage and parse group membership
 
 **Kind**: global function  
-**Returns**: <code>Array.&lt;Object&gt;</code> - An array of Check Point objects per given UIDs  
+**Returns**: <code>Array.&lt;Object&gt;</code> - An array of Check Point objects per given UIDs including garbage, groups, members, and restore commands  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| objdat | <code>Array.&lt;Object&gt;</code> | Array of Check Point objects |
+| objdat | <code>Array.&lt;cp\_objects.show\_objects\_uid&gt;</code> | Array of objects that match the filter} objdat Array of Check Point objects |
+
+<a name="parseRuleUse"></a>
+
+## parseRuleUse(objdat) ⇒ <code>Array.&lt;Object&gt;</code>
+For a given set of Check Point host objects, search for their use in the rulebase from 'show access-rule'
+
+**Kind**: global function  
+**Returns**: <code>Array.&lt;Object&gt;</code> - The global array of all Check Point objects, now with access-rule restore commands for direct and indirect use  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| objdat | <code>Array.&lt;cp\_objects.show\_objects\_uid&gt;</code> | Array of objects that match the filter} objdat Array of Check Point objects |
+
+<a name="parseNatUse"></a>
+
+## parseNatUse(objdat) ⇒ <code>Array.&lt;Object&gt;</code>
+Any host object in a NAT rule is consdiered out-of-scope, mark these rules as "garbage"
+
+**Kind**: global function  
+**Returns**: <code>Array.&lt;Object&gt;</code> - The global array of all Check Point objects  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| objdat | <code>Array.&lt;Object&gt;</code> | The parsed and prepared Check Point host object array |
+
+<a name="parseThreatUse"></a>
+
+## parseThreatUse(objdat) ⇒ <code>Array.&lt;Object&gt;</code>
+Any host object in a Threat Prevention rule is consdiered out-of-scope, mark these rules as "garbage"
+
+**Kind**: global function  
+**Returns**: <code>Array.&lt;Object&gt;</code> - The global array of all Check Point objects  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| objdat | <code>Array.&lt;Object&gt;</code> | The parsed and prepared Check Point host object array |
 
 <a name="getObjectUse"></a>
 
@@ -253,7 +300,7 @@ Recursively discover the use of a host object against Check Point policy
 
 | Param | Type | Description |
 | --- | --- | --- |
-| objarr | <code>Array.&lt;Object&gt;</code> | An Check Point object |
+| objarr | <code>Array.&lt;Object&gt;</code> | An array of Check Point object |
 
 <a name="getType"></a>
 
@@ -265,7 +312,7 @@ Given a Check Point UID, return the full set of object details via 'show-object'
 
 | Param | Type |
 | --- | --- |
-| myobj | [<code>uid</code>](#uid) | 
+| myobj | <code>uid</code> | 
 
 <a name="getRule"></a>
 
@@ -285,31 +332,31 @@ For a given Check Point host object, call out to the API via 'show-access-rule'
 For a given array of Check Point objects, tag the objects for deletion and POST to the API
 
 **Kind**: global function  
-**Returns**: <code>Object</code> - Returns the session handler after tagging operations are concluded  
+**Returns**: <code>Object</code> - Returns the session handler after tagging operations are concluded and the pubSession() completes  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| myobj | <code>Array.&lt;Object&gt;</code> | An array of tags to be added to a Check Point host object |
+| myobj | <code>Array.&lt;cp\_objects.tag\_std&gt;</code> | An array of tags to be added to a Check Point host object |
 
 <a name="doParse"></a>
 
 ## doParse(objdat) ⇒ <code>Array.&lt;Object&gt;</code>
-Given a set of objects returns by the Check Point Management API,
+Given a set of objects returns by the Check Point Management API, create the array of host objects elligible for deleition
 
 **Kind**: global function  
 **Returns**: <code>Array.&lt;Object&gt;</code> - The parsed and prepared Check Point host object array  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| objdat | <code>\*</code> | An array of objects where the parameter values were already found in policy |
+| objdat | <code>Array.&lt;cp\_objects.where\_used\_uid&gt;</code> | An array of objects where the parameter values were already found in policy |
 
 <a name="showJson"></a>
 
-## showJson(obj) ⇒ <code>json</code>
+## showJson(obj) ⇒ <code>Object</code>
 Colored version of the json output
 
 **Kind**: global function  
-**Returns**: <code>json</code> - A prettifed version of the json object using prettyjson library  
+**Returns**: <code>Object</code> - A prettifed version of the json object using prettyjson library  
 
 | Param | Type |
 | --- | --- |
@@ -363,7 +410,7 @@ With given options and HTTP POST data, continue HTTPS requests/resolve until the
 
 | Param | Type | Description |
 | --- | --- | --- |
-| options | <code>json</code> | JSON-formatted options to be sent to the Check Point Management API |
+| options | <code>cp\_objects.json</code> | JSON-formatted options to be sent to the Check Point Management API |
 | postData | <code>\*</code> | Data to be POST'd against the API |
 
 <a name="writeJson"></a>
@@ -375,7 +422,7 @@ Write json data passed out to file with a file named by given IP address :a.b.c.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| content | <code>json</code> | JSON-formatted data to write to file |
+| content | <code>cp\_objects.json</code> | JSON-formatted data to write to file |
 
 <a name="sleep"></a>
 
@@ -387,66 +434,17 @@ Promise'd sleep function to account for API round trip delays
 
 | Param | Type | Description |
 | --- | --- | --- |
-| ms | <code>int</code> | Number of milliseconds to sleep  by |
+| ms | <code>Number</code> | Number of milliseconds to sleep  by |
 
 <a name="countOf"></a>
 
-## countOf(obj) ⇒ <code>int</code>
+## countOf(obj) ⇒ <code>Number</code>
 Counts the number of keys in use for a given object
 
 **Kind**: global function  
-**Returns**: <code>int</code> - The number of keys in use  
+**Returns**: <code>Number</code> - The number of keys in use  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | obj | <code>Object</code> | The object to be checked |
 
-<a name="uid"></a>
-
-## uid : <code>Array.&lt;Object&gt;</code>
-where-used returned data format
-
-**Kind**: global typedef  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| used-directly | <code>Object</code> | Direct use of object |
-| used-directly.total | <code>Number</code> | Total count of usage |
-| used-directly.objects | <code>Array.&lt;Object&gt;</code> | Array of object dependencies |
-| used-directly.access-control-rules | <code>Array.&lt;Object&gt;</code> | Array of access rule dependencies |
-| used-directly.nat-rules | <code>Array.&lt;Object&gt;</code> | Array of nat rule dependencies |
-| used-directly.threat-prevention-rules | <code>Array.&lt;Object&gt;</code> | Array of threat inspection rules |
-| used-indirectly | <code>Object</code> | Indirect or nested use of object |
-| used-indirectly.total | <code>Number</code> | Total count of indirect use |
-| used-indirectly.objects | <code>Array.&lt;Object&gt;</code> | Array of object references |
-| used-indirectly.access-control-rules | <code>Array.&lt;Object&gt;</code> | Array of nested access rule |
-| used-indirectly.nat-rules | <code>Array.&lt;Object&gt;</code> | Array of indirect nat rules |
-| used-indirectly.threat-prevention-rules | <code>Array.&lt;Object&gt;</code> | Array of nested threat rules |
-
-**Example**  
-```js
-{ ip: [
-       {
-         uid: [
-         	  { 
-	          used-directly: {
-	       			  total: 0,
-	        		  access-control-rules[],
-	        		  nat-rules[],
-	        		  threat-prevention-rules[],
-	        		  objects[]
-	        		  },
-	      	  used-indirectly: {
-	       			  total: 0,
-	        		  access-control-rules[],
-	        		  nat-rules[],
-	        		  threat-prevention-rules[],
-	        		  objects[]
-	        		  }
-             }
-          ] 
-       }
-    ]
- }
-```

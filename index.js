@@ -7,7 +7,7 @@ process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 const https = require('https')
 const fs = require('fs');
 const ipUtil = require('ip-utils')
-import './typedefs.js'	//Various typedefs for Check Point Management API objects
+import * as cp_objects from './typedefs'
 
 /**
  * Traverse object collected in object
@@ -62,9 +62,7 @@ const mycred = require('./auth/mycpauth')
 const CpApiClass = require('./cpclass')
 const toApi = new CpApiClass(myapisite.chkp)
 
-
-
-vvar details = 'uid'
+var details = 'uid'
 
 //var objarr = []
 //var objdata = {}
@@ -169,7 +167,7 @@ async function admins() {
  * @function showObjects
  * @param {string} mydata 
  * @param {string} mycmd Command for mgmt API
- * @returns {import('./typedefs.js').show_objects_uid[]} UIDs of direct and indirect object usage
+ * @returns {cp_objects.show_objects_uid[]} UIDs of direct and indirect object usage
  */
 async function showObjects(mydata, mycmd) {
 	try {
@@ -203,8 +201,8 @@ async function showObjects(mydata, mycmd) {
 /** 
  * Given the return values from showObjects
  * @function checkObjects
- * @param {import('./typedefs.js').show_objects_uid} uid - UID to verify IP address filter
- * @returns {import('./typedefs.js').show_objects_uid[]} An Array of objects that match the filter
+ * @param {cp_objects.show_objects_uid} uid - UID to verify IP address filter
+ * @returns {cp_objects.show_objects_uid[]} An Array of objects that match the filter
  */
 async function checkObjects(objarr) {
 	try {
@@ -243,8 +241,8 @@ async function checkObjects(objarr) {
  /**
   * Determine where a set of objects is used in Check Point policies
   * @function whereUsed
-  * @param {import('./typedefs.js').uid_obj[]} objarr Any array of objects containing filter values by UID
-  * @return {import('./typedefs.js').where_used_uid[]} An array of objects where the parameter values were found in policy
+  * @param {cp_objects.uid_obj[]} objarr Any array of objects containing filter values by UID
+  * @return {cp_objects.where_used_uid[]} An array of objects where the parameter values were found in policy
   */
  async function whereUsed(objarr) {
 	try {
@@ -270,7 +268,7 @@ async function checkObjects(objarr) {
 /**
  * For a given set of Check Point objects, search for direct object usage and parse group membership
  * @function parseObjectUse
- * @param {import('./typedefs.js').show_objects_uid[]} objdat Array of objects that match the filter} objdat Array of Check Point objects
+ * @param {cp_objects.show_objects_uid[]} objdat Array of objects that match the filter} objdat Array of Check Point objects
  * @return {Object[]} An array of Check Point objects per given UIDs including garbage, groups, members, and restore commands 
  */
 async function parseObjectUse(objdat) {
@@ -328,7 +326,7 @@ async function parseObjectUse(objdat) {
 /**
  * For a given set of Check Point host objects, search for their use in the rulebase from 'show access-rule'
  * @function parseRuleUse
- * @param {import('./typedefs.js').show_objects_uid[]} objdat Array of objects that match the filter} objdat Array of Check Point objects
+ * @param {cp_objects.show_objects_uid[]} objdat Array of objects that match the filter} objdat Array of Check Point objects
  * @return {Object[]} The global array of all Check Point objects, now with access-rule restore commands for direct and indirect use
  */
 async function parseRuleUse(objdat) {
@@ -557,7 +555,7 @@ async function getRule(myobj) {
 /** 
  * For a given array of Check Point objects, tag the objects for deletion and POST to the API
  * @function tagObjects 
- * @param {import('./typedefs.js').tag_std[]} myobj An array of tags to be added to a Check Point host object
+ * @param {cp_objects.tag_std[]} myobj An array of tags to be added to a Check Point host object
  * @return {Object} Returns the session handler after tagging operations are concluded and the pubSession() completes
  */
 async function tagObjects(myobj) {
@@ -588,7 +586,7 @@ async function tagObjects(myobj) {
 /**
  * Given a set of objects returns by the Check Point Management API, create the array of host objects elligible for deleition
  * @function doParse 
- * @param {import('./typedefs.js').where_used_uid[]} objdat An array of objects where the parameter values were already found in policy
+ * @param {cp_objects.where_used_uid[]} objdat An array of objects where the parameter values were already found in policy
  * @return {Object[]} The parsed and prepared Check Point host object array
  */
 async function doParse(objdat) {
@@ -725,7 +723,7 @@ async function endSession() {
 /**
  * With given options and HTTP POST data, continue HTTPS requests/resolve until the final response object is reached
  * @function callOut
- * @param {import('./typedefs.js').json} options JSON-formatted options to be sent to the Check Point Management API
+ * @param {cp_objects.json} options JSON-formatted options to be sent to the Check Point Management API
  * @param {*} postData Data to be POST'd against the API
  * @return {*} Promised version of the data collected from the HTTPS callouts i.e. API object data
  */
@@ -754,7 +752,7 @@ async function callOut(options, postData) {
 /**
  * Write json data passed out to file with a file named by given IP address :a.b.c.d.json"
  * @function writeJson
- * @param {import('./typedefs.js').json} content JSON-formatted data to write to file
+ * @param {cp_objects.json} content JSON-formatted data to write to file
  */
 async function writeJson (content) {
 	try {
