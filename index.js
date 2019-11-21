@@ -7,7 +7,7 @@ process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 const https = require('https')
 const fs = require('fs');
 const ipUtil = require('ip-utils')
-import * as cp_objects from './typedefs'
+import cp_objects from './typedefs';
 
 /**
  * Traverse object collected in object
