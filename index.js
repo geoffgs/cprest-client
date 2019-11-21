@@ -1,11 +1,13 @@
 /** 
  * cprest client access for API 
  */
+
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 'use strict'
 const https = require('https')
 const fs = require('fs');
 const ipUtil = require('ip-utils')
+import './typedefs.js'	//Various typedefs for Check Point Management API objects
 
 /**
  * Traverse object collected in object
@@ -60,7 +62,9 @@ const mycred = require('./auth/mycpauth')
 const CpApiClass = require('./cpclass')
 const toApi = new CpApiClass(myapisite.chkp)
 
-var details = 'uid'
+
+
+vvar details = 'uid'
 
 //var objarr = []
 //var objdata = {}
@@ -70,24 +74,22 @@ var cleanobj = {}
 var allobjs = {}
 var mygroups = 'group'
 allobjs[mygroups] = []
-var myuids = 'object'
+var myuids = 'hosts'
 allobjs[myuids] = []
 var myrules = 'access-rule'
 allobjs[myrules] = []
+var garbage = 'garbage'
+allobjs[garbage] = []
+var backup = 'backup'
+allobjs[backup] = []
+var restore = 'restore'
+allobjs[restore] = []
 
-var cleangroups = []
-//var myuids = []
-//var myrules = []
-//var myres = {}
-//const objdata = {}
-
-var limit = '500'
-var runcmd = 'show-objects'
+var limit = '500'	//
+var runcmd = 'show-objects'	//Initial command
 
 var sessionid = {}
 var myfilename = 'dump'
-
-var nodata = {}
 /**
  * Perform a validation check against the command line arguments passed to the application. 
  * @function checkArgs
@@ -119,26 +121,34 @@ checkArgs()
 //.then(admins)
 
 /**
- * Post parameter checks, run the program
+ * After parameter checks, run the program
  * @function main
  */
 async function main() {
 	startSession(mycred)
 		.then(sessiontoken => setSession(sessiontoken))
 		.then(() => showObjects(nodata, runcmd))
-		.then(objid => checkObject(objid))
-		.then(clean => whereUsed(clean))
+		.then(objid => checkObjects(objid))
+		.then(() => whereUsed(allobjs[myuids]))
 		.then(myuse => doParse(myuse))
-		.then(inuse => parseObjectUse(inuse))
-		.then(tagit => tagObjects(tagit))
-		.then(() => parseRuleUse(cleanobj))
-		.then(myout => writeJson(myout))
+		//.then(myout => writeJson(myout))
+		//.then(() => parseObjectUse(allobj[myuids]))
+		//.then(tagit => tagObjects(tagit))
+		//.then(() => parseRuleUse(cleanobj))
+		//.then(() => parseNatUse(cleanobj))
+		//.then(() => parseThreatUse(cleanobj))
+		.then(() => writeJson(allobjs))
 		.then(() => endSession())
 		.then(exitstat => console.log(exitstat))
+		//.then(() => console.dir(cleanobj))
 		//.then(thindat => console.log(thindat))
 	.catch(endSession)
 }
 
+/**
+ * Administrative functionality for safety checking
+ * @function admins
+ */
 async function admins() {
 	mycred.domain = 'System Data'
 	details = 'standard'
@@ -155,10 +165,11 @@ async function admins() {
 }
 
 /** 
- * Check against the Check Point Management API for host object usage of a specific quad octet IPv4 address 
+ * Given a string of object data, POST to the 'show object' function
  * @function showObjects
- * @param {String} ip - IP address to search 
- * @returns {uid[]} UIDs of direct and indirect object usage
+ * @param {string} mydata 
+ * @param {string} mycmd Command for mgmt API
+ * @returns {import('./typedefs.js').show_objects_uid[]} UIDs of direct and indirect object usage
  */
 async function showObjects(mydata, mycmd) {
 	try {
@@ -184,17 +195,18 @@ async function showObjects(mydata, mycmd) {
 		}
 		return objarr
 	} catch (err) {
-			console.log('error in showObjects : ' + err)
+			console.log('ERROR: error in showObjects(mydata,mycmd)')
+			console.log(err)
 	}
 }
 
 /** 
- * Object verify IP matches filter
- * @function checkObject
- * @param {String[]} uid - UID to verify IP address filter
- * @returns {uid[]} -  array of safe UID's to verify usage against
+ * Given the return values from showObjects
+ * @function checkObjects
+ * @param {import('./typedefs.js').show_objects_uid} uid - UID to verify IP address filter
+ * @returns {import('./typedefs.js').show_objects_uid[]} An Array of objects that match the filter
  */
-async function checkObject(objarr) {
+async function checkObjects(objarr) {
 	try {
 		var mydata = {}
 		var mytagged = []
@@ -205,147 +217,125 @@ async function checkObject(objarr) {
 			mydata.uid = myobj
 			var setit = toApi.doPost(mydata, mycmd)
 			let indat = await callOut(setit.options, setit.postData)
-			if (indat.object['ipv4-address'] === ip) {
+			if (indat.object['ipv4-address'] === ip) {		//Matches IP filter, do the work
 				console.log(indat.object.uid)
-				mytagged = mytagged.concat(indat.object)
-				allobjs[myuids] = allobjs[myuids].concat(indat.object.uid)
+				mytagged = mytagged.concat(indat.object)	//Add to mytagged
+				allobjs[myuids] = allobjs[myuids].concat(indat.object.uid)	//Prep UIDs array
+				allobjs[backup] = allobjs[backup].concat(indat.object.name) //Prep Names array
+				let myback = {}
+				myback.name = indat.object.name
+				myback['ipv4-address'] = indat.object['ipv4-address']
+				myback.cmd = 'add-host'						//Command needed to restore
+				myback['ignore-warnings'] = true			//Experience
+				allobjs[restore] = allobjs[restore].concat(myback)		//Add to full restore list
 			} else {
 				throw new Error(indat.object.uid + ' object IP ' + indat.object['ipv4-address'] + ' does not match filter : ' + ip)
 			}
 		}
-		let tagdata = await tagObjects(mytagged)
+		//let tagdata = await tagObjects(mytagged)
 		return allobjs[myuids]
 	} catch (err) {
-		console.log('error in checkObject : ' + err)
+		console.log('ERROR: error in checkObjects(objArr)')
+		console.log(err)
 	}
 }
-
-/**
- * where-used returned data format
- * @typedef {Object[]} uid - Array of Host objects by UID
- * @property {Object} used-directly - Direct use of object
- * @property {Number} used-directly.total - Total count of usage
- * @property {Object[]} used-directly.objects - Array of object dependencies
- * @property {Object[]} used-directly.access-control-rules - Array of access rule dependencies
- * @property {Object[]} used-directly.nat-rules - Array of nat rule dependencies
- * @property {Object[]} used-directly.threat-prevention-rules - Array of threat inspection rules
- * @property {Object} used-indirectly - Indirect or nested use of object
- * @property {Number} used-indirectly.total - Total count of indirect use
- * @property {Object[]} used-indirectly.objects - Array of object references
- * @property {Object[]} used-indirectly.access-control-rules - Array of nested access rule 
- * @property {Object[]} used-indirectly.nat-rules - Array of indirect nat rules
- * @property {Object[]} used-indirectly.threat-prevention-rules - Array of nested threat rules
- * @example 
- * { ip: [
- *        {
- *          uid: [
- *          	  { 
- * 	          used-directly: {
- * 	       			  total: 0,
- * 	        		  access-control-rules[],
- * 	        		  nat-rules[],
- * 	        		  threat-prevention-rules[],
- * 	        		  objects[]
- * 	        		  },
- * 	      	  used-indirectly: {
- * 	       			  total: 0,
- * 	        		  access-control-rules[],
- * 	        		  nat-rules[],
- * 	        		  threat-prevention-rules[],
- * 	        		  objects[]
- * 	        		  }
- *              }
- *           ] 
- *        }
- *     ]
- *  }
- */
 
  /**
   * Determine where a set of objects is used in Check Point policies
   * @function whereUsed
-  * @param {Object[]} objarr Any array of objects containing filter values by UID
-  * @return {Object[]} An array of objects where the parameter values were found in policy
-  */ 
-async function whereUsed(objarr) {
+  * @param {import('./typedefs.js').uid_obj[]} objarr Any array of objects containing filter values by UID
+  * @return {import('./typedefs.js').where_used_uid[]} An array of objects where the parameter values were found in policy
+  */
+ async function whereUsed(objarr) {
 	try {
 		var mydata = {}
 		mycmd = 'where-used'
-                mydata['details-level'] = details
-                mydata.indirect = true
+		mydata['details-level'] = details
+		mydata.indirect = true
 		for (var x in objarr) {
 			let myreturn = {}
 			mydata.uid = objarr[x]
-                	var setit = toApi.doPost(mydata, mycmd)
-                	myreturn[objarr[x]] = await callOut(setit.options, setit.postData)
-                	usedobj[ip] = usedobj[ip].concat(myreturn)
+			var setit = toApi.doPost(mydata, mycmd)
+			myreturn[objarr[x]] = await callOut(setit.options, setit.postData)
+			usedobj[ip] = usedobj[ip].concat(myreturn)
 		}
-                //usedobj[ip] = usedobj[ip].concat(myreturn)
+		//usedobj[ip] = usedobj[ip].concat(myreturn)
 		return usedobj
 	} catch (err) {
-		console.log('error in whereUsed : ' + err)
+		console.log('ERROR: in whereUsed(objarr)')
+		console.logt(err)
 	}
 }
 
 /**
  * For a given set of Check Point objects, search for direct object usage and parse group membership
  * @function parseObjectUse
- * @param {Object[]} objdat Array of Check Point objects
- * @return {Object[]} An array of Check Point objects per given UIDs 
+ * @param {import('./typedefs.js').show_objects_uid[]} objdat Array of objects that match the filter} objdat Array of Check Point objects
+ * @return {Object[]} An array of Check Point objects per given UIDs including garbage, groups, members, and restore commands 
  */
 async function parseObjectUse(objdat) {
 	try {
-		var myres = []
 		var myret = []
-		Object.keys(objdat).forEach(uid => {	//For each UID, concatenate a response of all reference of used-directly
-			//myres = myres.concat(get([uid, '0', 'used-directly', '0', 'objects'], usedobj[ip][uid]))
-			myres = myres.concat(get([uid, '0', 'used-directly', '0', 'objects'], objdat))
-			//myres['access'] = myres['access'].concat(get([uid, '0', 'used-directly', '1', 'access-control-rules', '0'], objdat))
-			//myres = myres.concat(objdat)
-		});
-		//let unique = [...new Set(myres)]
-		myres = [...new Set(myres)]
-		for (var x in myres) {	
-			let mychk = await getType(myres[x])
-			if (mychk.type === 'group') {	//If object returned is a group, must parse through group membership
+		objdat = [...new Set(objdat)]
+		for (var x of objdat) {
+			let mychk = await getType(x)
+			if (mychk.type === 'group') {
 				let mygrp = {}
-				mygrp.type = mychk.type
+				let mygrpback = {}
 				mygrp.uid = mychk.uid
-				myret = myret.concat(mygrp)
+				mygrpback.name = mychk.name
+				mygrpback.cmd = 'set-group'
+				//myret = myret.concat(mygrp)
 				let memarr = []
-				Object.values(mychk.members).forEach(gmem => {	//For every group member identified	
-					memarr = memarr.concat(gmem.uid)			//Concatenate all members' UIDs into the array
+				let memarrback = []
+				Object.values(mychk.members).forEach(gmem => {
+					memarr = memarr.concat(gmem.uid)
+					memarrback = memarrback.concat(gmem.name)
 				});
-				let smembers = memarr.filter(x => allobjs[myuids].includes(x))	
+				let smembers = memarr.filter(x => allobjs[myuids].includes(x))
 				let members = {}
-				members.remove = smembers.join()
+				let members2 = {}
+				members.remove = smembers
 				mygrp.members = members
 				allobjs[mygroups] = allobjs[mygroups].concat(mygrp)
+				let bmembers = memarrback.filter(x => allobjs[backup].includes(x))
+				//['members']add = bmembers
+				members2.add = bmembers
+				mygrpback.members = members2
+				//delete mygrpback.members.remove
+				allobjs[restore] = allobjs[restore].concat(mygrpback)
 				//let smembers = mychk.members.filter(x => allobjs[myuids].includes(x))
 				//if (mychk.length > 0) {
 					//console.log(mychk)
 				//}
+			} else {
+				let badobj = {}
+				if (!mychk.type) {
+					mychk.type = 'NULL TYPE'
+				}
+				badobj.type = mychk.type
+				badobj.uid = mychk.uid
+				badobj.name = mychk.name
+				allobjs[garbage] = allobjs[garbage].concat(badobj)
 			}
 		}
-		return myret
+		return allobjs
 	} catch (err) {
-		console.log('error in parseObjectUse : ' + err)
+		console.log('ERROR: in parseObjectUse(onjdat)')
+		console.log(err)
 	}
 }
-
-
+/**
+ * For a given set of Check Point host objects, search for their use in the rulebase from 'show access-rule'
+ * @function parseRuleUse
+ * @param {import('./typedefs.js').show_objects_uid[]} objdat Array of objects that match the filter} objdat Array of Check Point objects
+ * @return {Object[]} The global array of all Check Point objects, now with access-rule restore commands for direct and indirect use
+ */
 async function parseRuleUse(objdat) {
 	try {
-		var myres = []
-		Object.keys(objdat).forEach(uid => {
-			//myres = myres.concat(get([uid, '0', 'used-directly', '0', 'objects'], usedobj[ip][uid]))
-			myres = myres.concat(get([uid, '0', 'used-directly', '1', 'access-control-rules'], objdat))
-			//myres['access'] = myres['access'].concat(get([uid, '0', 'used-directly', '1', 'access-control-rules', '0'], objdat))
-			//myres = myres.concat(objdat)
-		});
 		//let unique = [...new Set(myres)]
 		//myres = [...new Set(myres)]
-		for (var x of myres) {
+		for (var x of objdat) {
 			if (x) {
 				let rule = {}
 				rule.uid = x.rule
@@ -361,7 +351,7 @@ async function parseRuleUse(objdat) {
 				if (sremove.length > 0) {
 					console.log(sremove + ' src remove ' + sremove.length)
 					let source = {}
-					source.remove = sremove.join()
+					source.remove = sremove
 					rulechk.source = source
 				}
 				//rulechk.source = remove
@@ -370,13 +360,15 @@ async function parseRuleUse(objdat) {
 				if (dremove.length > 0) {
 					console.log(dremove + ' dst remove ' + dremove.length)
 					let destination = {}
-					destination.remove = dremove.join()
+					destination.remove = dremove
 					rulechk.destination = destination
 				}
 				//rulechk.olddestination = ruleobj.destination
 				allobjs[myrules] = allobjs[myrules].concat(rulechk)
 			}
 		}
+		// run backup of myrules changes
+		//console.log(allobjs[myrules])
 		//	let mychk = await getType(myres[x])
 		//	if (mychk.type === 'group') {
 				//let mygrp = {}
@@ -384,9 +376,87 @@ async function parseRuleUse(objdat) {
 		//		mygrp.uid = mychk.uid
 		//		myret = myret.concat(myres[x])
 		//}
+		for (var x of allobjs[myrules]) {
+			//let source = {}
+			let asource = []
+			let adest = []
+			let rulechk = {}
+			if (x.source) {
+				rulechk.uid = x.uid
+				rulechk.layer = x.layer
+				rulechk.cmd = 'set-access-rule'
+				for (var y of x.source.remove) {
+					let theobj = await getType(y)
+					asource = asource.concat(theobj.name)
+					console.log(theobj.name)
+					//console.log(x)
+				}
+				let source = {}
+				source.add = asource
+				rulechk.source = source
+			} 
+			if (x.destination) {
+				rulechk.uid = x.uid
+				rulechk.layer = x.layer
+				rulechk.cmd = 'set-access-rule'
+				for (var y of x.destination.remove) {
+					let theobj = await getType(y)
+					adest = adest.concat(theobj.name)
+					console.log(theobj.name)
+					//console.log(x)
+				}
+				let destination = {}
+				destination.add = adest
+				rulechk.destination = destination
+			}
+			allobjs[restore] = allobjs[restore].concat(rulechk)
+		}
 		return allobjs
 	} catch (err) {
 		console.log('error in parseRuleUse : ' + err)
+	}
+}
+
+/**
+ * Any host object in a NAT rule is consdiered out-of-scope, mark these rules as "garbage"
+ * @function parseNatUse 
+ * @param {Object[]} objdat The parsed and prepared Check Point host object array
+ * @return {Object[]} The global array of all Check Point objects
+ */
+async function parseNatUse(objdat) {
+	try {
+		for (var x of objdat) {
+			if (x) {
+				x.type = 'nat-rule'
+				allobjs[garbage] = allobjs[garbage].concat(x)
+				//console.log(x)
+			}
+		}
+		return allobjs
+	} catch (err) {
+		console.log('ERROR: error in parseNatUse(objdat)')
+		console.log(err)
+	}
+}
+/**
+ * Any host object in a Threat Prevention rule is consdiered out-of-scope, mark these rules as "garbage"
+ * @function parseThreatUse 
+ * @param {Object[]} objdat The parsed and prepared Check Point host object array
+ * @return {Object[]} The global array of all Check Point objects
+ */
+async function parseThreatUse(objdat) {
+	try {
+		for (var x of objdat) {
+			if (x) {
+				x.type = 'threat-prevention'
+				allobjs[garbage] = allobjs[garbage].concat(x)
+				//console.log(x)
+			}
+		}
+		return allobjs
+	} catch (err) {
+		console.log('ERROR: error in parseThreatUse(objdat)')
+		console.log(err)
 	}
 }
 
@@ -409,14 +479,15 @@ async function getObjectUse(isused) {
 		let tagdata = await tagObject(myuse)
 		return myuse
 	} catch (err) {
-		console.log('error in getObjectUse : ' + err)
+		console.log('ERROR: error in getObjectUse(isused)')
+		console.log(err)
 	}
 }
 
  /**
   * Recursively discover the use of a host object against Check Point policy
   * @function getUsedObject 
-  * @param {Object[]} objarr An Check Point object 
+  * @param {Object[]} objarr An array of Check Point object 
   * @return {Object[]} An array of objects where the parameter values were found in policy
   */
 async function getUsedObject(objarr) {
@@ -435,7 +506,8 @@ async function getUsedObject(objarr) {
 		}
 		return myreturn
 	} catch (err) {
-		console.log('error in getUsedObject : ' + err)
+		console.log('ERROR: error in getUsedObject(objarr)')
+		console.log(err)
 	}
 }
 
@@ -456,7 +528,8 @@ async function getType(myobj) {
 		//console.log(indat.object.type)
 		return await indat.object
 	} catch (err) {
-		console.log('error in getType : ' + err)
+		console.log('ERROR: error in getType(myobj)')
+		console.log(err)
 	}
 }
 
@@ -476,15 +549,16 @@ async function getRule(myobj) {
 		//return await indat
 		return await callOut(setit.options, setit.postData)
 	} catch (err) {
-		console.log('error in getRule : ' + err)
+		console.log('ERROR: error in getRule(myobj)')
+		console.log(err)
 	}
 }
 
 /** 
  * For a given array of Check Point objects, tag the objects for deletion and POST to the API
  * @function tagObjects 
- * @param {Object[]} myobj An array of tags to be added to a Check Point host object
- * @return {Object} Returns the session handler after tagging operations are concluded
+ * @param {import('./typedefs.js').tag_std[]} myobj An array of tags to be added to a Check Point host object
+ * @return {Object} Returns the session handler after tagging operations are concluded and the pubSession() completes
  */
 async function tagObjects(myobj) {
 	try {
@@ -506,14 +580,15 @@ async function tagObjects(myobj) {
 		let mypub = await pubSession()
 		return mypub
 	} catch (err) {
-		console.log('error in tagObject : ' + err)
+		console.log('ERROR: error in tagObjects(myobj)')
+		console.log(err)
 	}
 }
 
 /**
- * Given a set of objects returns by the Check Point Management API, 
+ * Given a set of objects returns by the Check Point Management API, create the array of host objects elligible for deleition
  * @function doParse 
- * @param {*} objdat An array of objects where the parameter values were already found in policy
+ * @param {import('./typedefs.js').where_used_uid[]} objdat An array of objects where the parameter values were already found in policy
  * @return {Object[]} The parsed and prepared Check Point host object array
  */
 async function doParse(objdat) {
@@ -521,31 +596,31 @@ async function doParse(objdat) {
 		//const myres = {}
 		console.log('Doing Search of IP : ' + ip)
 		console.log('Number of host objects: ' + Object.values(objdat[ip]).length)
-		Object.keys(objdat[ip]).forEach(uid => {
-			Object.keys(objdat[ip][uid]).forEach(usetype => {
+		Object.keys(objdat[ip]).forEach(uid => {	//For every IP objects
+			Object.keys(objdat[ip][uid]).forEach(usetype => {	//For every UID
 				console.log(usetype)
 				cleanobj[usetype] = []
-				Object.keys(objdat[ip][uid][usetype]).forEach(used => {
+				Object.keys(objdat[ip][uid][usetype]).forEach(used => {	//For every use type
 					var myres = {}
 					myres[used] = []
 					//console.log(used + ' : ')
-					if (objdat[ip][uid][usetype][used]['total'] > 0) {
+					if (objdat[ip][uid][usetype][used]['total'] > 0) {	//If the object is used in 1 or more rules
 						mytotal = objdat[ip][uid][usetype][used]['total']
 						console.log(used + ' : ' + objdat[ip][uid][usetype][used]['total'])
-						Object.keys(objdat[ip][uid][usetype][used]).forEach(arrs => {
+						Object.keys(objdat[ip][uid][usetype][used]).forEach(arrs => {	//For each rule that this host object exists in
 							//console.log(arrs + ' ' + Object.keys(objdat[ip][uid][usetype][used][arrs]).length)
-							if (Object.keys(objdat[ip][uid][usetype][used][arrs]).length > 0) {
+							if (Object.keys(objdat[ip][uid][usetype][used][arrs]).length > 0) {		//If the object is used in 1 or more rules
 								let myarrs = {}
 								myarrs[arrs] = []
 								let mycnt = Object.keys(objdat[ip][uid][usetype][used][arrs]).length
 								//console.log(Object.keys(objdat[ip][uid][usetype][used][arrs]))
 								//console.log(objdat[ip][uid][usetype][used][arrs])
 								console.log(mycnt + ' ' + arrs )
-								myarrs[arrs] = myarrs[arrs].concat(objdat[ip][uid][usetype][used][arrs])
-								myres[used] = myres[used].concat(myarrs)
+								myarrs[arrs] = myarrs[arrs].concat(objdat[ip][uid][usetype][used][arrs])	
+								myres[used] = myres[used].concat(myarrs)	//Concatenate known values to myres
 							}
 						});
-						cleanobj[usetype] = cleanobj[usetype].concat(myres)
+						cleanobj[usetype] = cleanobj[usetype].concat(myres)	//Add to the prepared array for return
 					}
 				});
 			});
@@ -554,14 +629,15 @@ async function doParse(objdat) {
 		console.log('returning object data')
 		return cleanobj
 	} catch (err) {
-		console.log('error in doParse : ' + err)
+		console.log('ERROR: error in doParse(objdat)')
+		console.log(err)
 	}
 }
 /** 
  * Colored version of the json output
  * @function showJson
  * @param {json} obj 
- * @return {json} A prettifed version of the json object using prettyjson library
+ * @return {Object} A prettifed version of the json object using prettyjson library
  */
 async function showJson(obj) {
     return (showpretty.render(obj, {
@@ -578,16 +654,16 @@ async function showJson(obj) {
  * @return {Object} The prepared session handler
  */
 async function startSession(myauth) {
-        try {
-                console.log('starting session')
-                var setit = toApi.doPost(myauth, 'login')
+	try {
+		console.log('starting session')
+		var setit = toApi.doPost(myauth, 'login')
 		//toApi.showOpt()
-                sessionid = await callOut(setit.options, setit.postData)
-                return sessionid
-        } catch (err) {
-                console.log('error in startSession')
-                console.log(err)
-        }
+		sessionid = await callOut(setit.options, setit.postData)
+		return sessionid
+	} catch (err) {
+			console.log('ERROR: Failed to startSession(), ')
+			console.log(err)
+	}
 }
 
 /**
@@ -603,7 +679,8 @@ async function setSession(mysession) {
 		//toApi.showOpt()
 		return
 	} catch (err) {
-		console.log('error in setSession\n' + err)
+		console.log('ERROR: Failed to setSession(), bad token?')
+		console.log(err)
 	}
 }
 
@@ -622,7 +699,8 @@ async function pubSession() {
 		await sleep(3000)	//Self-imposed rate limiting, just wait...
 		return mysession
 	} catch (err) {
-		console.log('error in pubSession : ' + err)
+		console.log('ERROR: Failed to pubSession()')
+		console.log(err)
 	}
 }
 
@@ -639,14 +717,15 @@ async function endSession() {
 		//toApi.showOpt()
 		return nosession
 	} catch (err) {
-		console.log('error in endSession : ' + err)
+		console.log('ERROR: Failed to endSession()')
+		console.log(err)
 	}
 }
 
 /**
  * With given options and HTTP POST data, continue HTTPS requests/resolve until the final response object is reached
  * @function callOut
- * @param {json} options JSON-formatted options to be sent to the Check Point Management API
+ * @param {import('./typedefs.js').json} options JSON-formatted options to be sent to the Check Point Management API
  * @param {*} postData Data to be POST'd against the API
  * @return {*} Promised version of the data collected from the HTTPS callouts i.e. API object data
  */
@@ -675,28 +754,29 @@ async function callOut(options, postData) {
 /**
  * Write json data passed out to file with a file named by given IP address :a.b.c.d.json"
  * @function writeJson
- * @param {json} content JSON-formatted data to write to file
+ * @param {import('./typedefs.js').json} content JSON-formatted data to write to file
  */
 async function writeJson (content) {
-        try {
-                var newfile = myfilename + '.json'
+	try {
+		var newfile = myfilename + '.json'
 		console.log('writing file . . . ' + newfile)
 		console.log(typeof content)
-                const data = await fs.writeFileSync(newfile, JSON.stringify(content, undefined, 2))
-                //file written successfully
+		const data = await fs.writeFileSync(newfile, JSON.stringify(content, undefined, 2))
+		//file written successfully
 		console.log(content)
-                console.log('Json data written to ' + newfile)
-                console.log('  --  ')
-                return content
-        } catch (err) {
-                console.error(err)
-        }
+		console.log('Json data written to ' + newfile)
+		console.log('  --  ')
+		return content
+	} catch (err) {
+		console.log("ERROR: Failing writing to disk writeJson(content)")
+		console.log(err)
+	}
 }
 
 /**
  * Promise'd sleep function to account for API round trip delays
  * @function sleep 
- * @param {int} ms Number of milliseconds to sleep  by
+ * @param {Number} ms Number of milliseconds to sleep  by
  * @return {Object} The completed promise after x time has passed
  */
 function sleep(ms) {
@@ -707,7 +787,7 @@ function sleep(ms) {
  * Counts the number of keys in use for a given object
  * @function countOf 
  * @param {Object} obj The object to be checked
- * @return {int} The number of keys in use
+ * @return {Number} The number of keys in use
  */
 function countOf(obj) {
 	return Object.keys(obj).length
