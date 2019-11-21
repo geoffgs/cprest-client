@@ -1,49 +1,13 @@
 /**
- * @namespace typedefs
+ * @module typedefs
  */
-
+ 
 /**
- * where-used returned data format
- * @typedef {Object[]} uid - Array of Host objects by UID
- * @property {Object} used-directly - Direct use of object
- * @property {Number} used-directly.total - Total count of usage
- * @property {Object[]} used-directly.objects - Array of object dependencies
- * @property {Object[]} used-directly.access-control-rules - Array of access rule dependencies
- * @property {Object[]} used-directly.nat-rules - Array of nat rule dependencies
- * @property {Object[]} used-directly.threat-prevention-rules - Array of threat inspection rules
- * @property {Object} used-indirectly - Indirect or nested use of object
- * @property {Number} used-indirectly.total - Total count of indirect use
- * @property {Object[]} used-indirectly.objects - Array of object references
- * @property {Object[]} used-indirectly.access-control-rules - Array of nested access rule 
- * @property {Object[]} used-indirectly.nat-rules - Array of indirect nat rules
- * @property {Object[]} used-indirectly.threat-prevention-rules - Array of nested threat rules
- * @example 
- * { group: 
-    *      [ { type: 'group',
-    *          uid: '12345678-1234-1234-1234-1234567890ab' 
-    *          members: [uid] },
-    *        { type: 'group',
-    *          uid: '87654321-4321-4321-4321-ba0987654321' 
-    *          members: [uid] } ]
-    *   object: [ 'ba123456-abcd-abcd-abcd-abcd0000dcba' ],
-    *             'access-rule': [],
-    *   garbage:
-    *     [ {   "type": 'RadiusServer',
-    *           "uid": '88889999-00aa-00aa-00aa-8888abab9999',
-    *           "name": "RadiusServer_01" },
-    *       {   "rule": "ffff1111-9988-9988-99880-ffff0101ffff",
-    *           "rule-columns": ["original-source"], 
-    *           "position": "69",
-    *           "package": "4141abab-7777-7777-7777-717199991717",
-    *           "type": "nat-rule" },
-    *        {  "rule": "dddd123d-d0d0-d0d0-d0d0-6666dddd0000",
-    *           "rule-columns": ["translated-destination"], 
-    *           "position": "68",
-    *           "package": "4141abab-7777-7777-7777-717199991717",
-    *           "type": "nat-rule" },
-    *      ]
-    *  }
-    */
+ * Check Point Management API standard-details host object format 
+ * @typedef {Object} uid_obj
+ * @property {string} uid Object unique identifier.
+ * @memberof typedefs
+ */
 
 /**
  * Check Point Management API standard-details host object format 
@@ -91,41 +55,40 @@
  /**
  * Check Point Management API standard-details ranges object format from 'show hosts'
  * @typedef {Object} show_host_std
- * 
- * @property {int} from From which element number the query was done.
+ * @property {number} from From which element number the query was done.
  * @property {host_std[]} objects List of objects in the range
- * @property {int} to To which element number the query was done.
- * @property {int} total Total number of elements returned by the query.
+ * @property {number} to To which element number the query was done.
+ * @property {number} total Total number of elements returned by the query.
  * @memberof typedefs
  */ 
 
   /**
  * Check Point Management API full-details ranges object format from 'show hosts'
  * @typedef {Object} show_host_full
- * @property {int} from From which element number the query was done.
+ * @property {number} from From which element number the query was done.
  * @property {host_full[]} objects List of objects in the range
- * @property {int} to To which element number the query was done.
- * @property {int} total Total number of elements returned by the query.
+ * @property {number} to To which element number the query was done.
+ * @property {number} total Total number of elements returned by the query.
  * @memberof typedefs
  */ 
 
  /**
  * Check Point Management API standard-details ranges object format from 'show hosts'
  * @typedef {Object} show_hosts_std
- * @property {int} from From which element number the query was done.
+ * @property {number} from From which element number the query was done.
  * @property {host_std[]} objects List of objects in the range
- * @property {int} to To which element number the query was done.
- * @property {int} total Total number of elements returned by the query.
+ * @property {number} to To which element number the query was done.
+ * @property {number} total Total number of elements returned by the query.
  * @memberof typedefs
  */ 
 
   /**
  * Check Point Management API full-details ranges object format from 'show hosts'
  * @typedef {Object} show_hosts_full
- * @property {int} from From which element number the query was done.
+ * @property {number} from From which element number the query was done.
  * @property {host_full[]} objects List of objects in the range
- * @property {int} to To which element number the query was done.
- * @property {int} total Total number of elements returned by the query.
+ * @property {number} to To which element number the query was done.
+ * @property {number} total Total number of elements returned by the query.
  * @memberof typedefs
  */ 
 
@@ -201,40 +164,40 @@
  /**
  * Check Point Management API standard-details ranges object format from 'show groups'
  * @typedef {Object} show_groups_std
- * @property {int} from From which element number the query was done.
+ * @property {number} from From which element number the query was done.
  * @property {group_std[]} objects List of objects in the range
- * @property {int} to To which element number the query was done.
- * @property {int} total Total number of elements returned by the query.
+ * @property {number} to To which element number the query was done.
+ * @property {number} total Total number of elements returned by the query.
  * @memberof typedefs
  */
 
 /**
  * Check Point Management API full-details ranges object format from 'show groups'
  * @typedef {Object} show_groups_full
- * @property {int} from From which element number the query was done.
+ * @property {number} from From which element number the query was done.
  * @property {group_full[]} objects List of objects in the range
- * @property {int} to To which element number the query was done.
- * @property {int} total Total number of elements returned by the query.
+ * @property {number} to To which element number the query was done.
+ * @property {number} total Total number of elements returned by the query.
  * @memberof typedefs
  */
 
  /**
  * Check Point Management API standard-details ranges object format from 'show address-ranges'
  * @typedef {Object} show_ranges_std
- * @property {int} from From which element number the query was done.
+ * @property {number} from From which element number the query was done.
  * @property {range_std[]} objects List of objects in the range
- * @property {int} to To which element number the query was done.
- * @property {int} total Total number of elements returned by the query.
+ * @property {number} to To which element number the query was done.
+ * @property {number} total Total number of elements returned by the query.
  * @memberof typedefs
  */
 
 /**
  * Check Point Management API full-details ranges object format from 'show address-ranges'
  * @typedef {Object} show_ranges_full
- * @property {int} from From which element number the query was done.
+ * @property {number} from From which element number the query was done.
  * @property {range_full[]} objects List of objects in the range
- * @property {int} to To which element number the query was done.
- * @property {int} total Total number of elements returned by the query.
+ * @property {number} to To which element number the query was done.
+ * @property {number} total Total number of elements returned by the query.
  * @memberof typedefs
  */
 
@@ -266,7 +229,7 @@
  * @property {string} name Object name. Should be unique in the domain.
  * @property {string} uid Object unique identifier.
  * @property {string} type Type of the object.
- * @property {domain_obj}_obj} domain Information about the domain the object belongs to.
+ * @property {domain_obj} domain Information about the domain the object belongs to.
  * @property {string} ipv4-address-first First IPv4 address in the range.
  * @property {string} ipv4-address-last Last IPv4 address in the range.
  * @property {string} ipv6-address-first First IPv6 address in the range.
@@ -324,7 +287,7 @@
  * Check Point Management API timestamp object format
  * @typedef {Object} timestamp 
  * @property {string} iso-8601 Date and time represented in international ISO 8601 format.
- * @property {Int} posix Number of milliseconds that have elapsed since 00:00:00, 1 January 1970.
+ * @property {number} posix Number of milliseconds that have elapsed since 00:00:00, 1 January 1970.
  * @memberof typedefs
  */
 
@@ -334,7 +297,7 @@
  * @property {string} name Object name. Should be unique in the domain.
  * @property {string} uid Object unique identifier.
  * @property {string} type Type of the object.
- * @property {domain_obj}_obj} domain Information about the domain the object belongs to.
+ * @property {domain_obj} domain Information about the domain the object belongs to.
  * @memberof typedefs
  */
 
@@ -351,8 +314,8 @@
  * @property {string} subnet4 IPv4 network address.
  * @property {string} subnet6 IPv6 network address.
  * @property {string} uid Object unique identifier.
- * @property {int} mask-length4 IPv4 network mask length.
- * @property {int} mask-length6 IPv6 network mask length.
+ * @property {number} mask-length4 IPv4 network mask length.
+ * @property {number} mask-length6 IPv6 network mask length.
  * @property {string} type Type of the object.
  * @property {domain_obj} domain Information about the domain the object belongs to.
  * @property {string} icon Object icon.
@@ -369,8 +332,8 @@
  * @property {string} subnet4 IPv4 network address.
  * @property {string} subnet6 IPv6 network address.
  * @property {string} uid Object unique identifier.
- * @property {int} mask-length4 IPv4 network mask length.
- * @property {int} mask-length6 IPv6 network mask length.
+ * @property {number} mask-length4 IPv4 network mask length.
+ * @property {number} mask-length6 IPv6 network mask length.
  * @property {string} type Type of the object.
  * @property {domain_obj} domain Information about the domain the object belongs to.
  * @property {string} icon Object icon.
@@ -405,40 +368,40 @@
 /**
 * Check Point Management API standard-details access-role object format from 'show tags'
 * @typedef {Object} show_tags_std
-* @property {int} from From which element number the query was done.
+* @property {number} from From which element number the query was done.
 * @property {tag_std[]} objects Array of tag objects 
-* @property {int} to To which element number the query was done.
-* @property {int} total Total number of elements returned by the query.
+* @property {number} to To which element number the query was done.
+* @property {number} total Total number of elements returned by the query.
 * @memberof typedefs
 */ 
 
 /**
 * Check Point Management API standard-details access-role object format from 'show tags'
 * @typedef {Object} show_tags_std
-* @property {int} from From which element number the query was done.
+* @property {number} from From which element number the query was done.
 * @property {tag_std[]} objects Array of tag objects 
-* @property {int} to To which element number the query was done.
-* @property {int} total Total number of elements returned by the query.
+* @property {number} to To which element number the query was done.
+* @property {number} total Total number of elements returned by the query.
 * @memberof typedefs
 */ 
 
 /**
  * Check Point Management API standard-details access-role object format from 'show access-roles'
  * @typedef {Object} access_roles_std
- * @property {int} from From which element number the query was done.
+ * @property {number} from From which element number the query was done.
  * @property {access_role_std[]} objects List of objects in the range
- * @property {int} to To which element number the query was done.
- * @property {int} total Total number of elements returned by the query.
+ * @property {number} to To which element number the query was done.
+ * @property {number} total Total number of elements returned by the query.
  * @memberof typedefs
  */
 
 /**
  * Check Point Management API full-details access-role object format from 'show access-roles'
  * @typedef {Object} access_roles_full
- * @property {int} from From which element number the query was done.
+ * @property {number} from From which element number the query was done.
  * @property {access_role_full[]} objects List of objects in the range
- * @property {int} to To which element number the query was done.
- * @property {int} total Total number of elements returned by the query.
+ * @property {number} to To which element number the query was done.
+ * @property {number} total Total number of elements returned by the query.
  * @memberof typedefs
  */
 
@@ -483,10 +446,10 @@
  /**
  * Check Point Management API standard-details access-role object format from 'show security-zones'
  * @typedef {Object} security_zones_std
- * @property {int} from From which element number the query was done.
+ * @property {number} from From which element number the query was done.
  * @property {security_zone_std[]} objects List of objects in the range
- * @property {int} to To which element number the query was done.
- * @property {int} total Total number of elements returned by the query.
+ * @property {number} to To which element number the query was done.
+ * @property {number} total Total number of elements returned by the query.
  * @memberof typedefs
  */
 
@@ -517,10 +480,10 @@
  /**
  * Check Point Management API standard-details access-role object format from 'show access-layers'
  * @typedef {Object} access_layers_std
- * @property {int} from From which element number the query was done.
+ * @property {number} from From which element number the query was done.
  * @property {access_layer_std[]} objects List of objects in the range
- * @property {int} to To which element number the query was done.
- * @property {int} total Total number of elements returned by the query.
+ * @property {number} to To which element number the query was done.
+ * @property {number} total Total number of elements returned by the query.
  * @memberof typedefs
  */
 
@@ -556,8 +519,8 @@
  */
 
 /** 
- * Check Point Management API basic rule return object
- * @typedef {Object} rule_obj
+ * Check Point Management API basic rule return object standard-details
+ * @typedef {Object} rule_obj_std
  * @property {number} total Total number of elements returned by the query.
  * @property {std_obj[]} objects Usage in objects.
  * @property {std_obj[]} access-control-rules Usage in objects.
@@ -566,12 +529,54 @@
  * @memberof typedefs
  */
 
+ /** 
+ * Check Point Management API basic rule return object uid-details
+ * @typedef {Object} rule_obj_uid
+ * @property {number} total Total number of elements returned by the query.
+ * @property {uid_obj[]} objects Usage in objects.
+ * @property {uid_obj[]} access-control-rules Usage in objects.
+ * @property {uid_obj[]} nat-rules Usage in objects.
+ * @property {uid_obj[]} threat-prevention-rules Usage in objects.
+ * @memberof typedefs
+ */
+
 /** 
  * Check Point Management API standard-details where-used return object
  * @typedef {Object} where_used_std
- * @property {rule_obj[]} used-directly Direct usage of the object.
- * @property {rule_obj[]} used-indirectly Indirect usage of the object.
+ * @property {rule_obj_std[]} used-directly Direct usage of the object.
+ * @property {rule_obj_std[]} used-indirectly Indirect usage of the object.
  * @memberof typedefs
+ */
+
+/** 
+ * Check Point Management API uid-details where-used return object
+ * @typedef {Object} where_used_uid
+ * @property {rule_obj_uid[]} used-directly Direct usage of the object.
+ * @property {rule_obj_uid[]} used-indirectly Indirect usage of the object.
+ * @memberof typedefs
+ * @example 
+ * { ip: [
+ *        {
+ *          uid: [
+ *             { used-directly: {
+ * 	       		  total: 0,
+ * 	        		  access-control-rules[],
+ * 	        		  nat-rules[],
+ * 	        		  threat-prevention-rules[],
+ * 	        		  objects[]
+ * 	        		  },
+ * 	      	  used-indirectly: {
+ * 	       		  total: 0,
+ * 	        		  access-control-rules[],
+ * 	        		  nat-rules[],
+ * 	        		  threat-prevention-rules[],
+ * 	        		  objects[]
+ * 	        	     }
+ *              }
+ *           ] 
+ *        }
+ *     ]
+ *  }
  */
 
 /** 
@@ -581,6 +586,13 @@
  * @memberof typedefs
  */
 
+/** 
+ * Check Point Management API uid-details object returned from 'show object'
+ * @typedef {Object} show_obj_uid
+ * @property {uid_obj[]} object Array of UIDs
+ * @memberof typedefs
+ */
+ 
  /** 
  * Check Point Management API basic order/sorting object
  * @typedef {Object} order_obj
@@ -591,7 +603,7 @@
 
 /** 
  * Check Point Management API arguments values for 'show objects' @see https://sc1.checkpoint.com/documents/latest/APIs/index.html#cli/show-objects~v1.5#ip-only
- * @typedef {Object} show_objects
+ * @typedef {Object} show_objects_arguments
  * @property {string} filter Search expression to filter objects by. The provided text should be exactly the same as it would be given in Smart Console. The logical operators in the expression ('AND', 'OR') should be provided in capital letters. By default, the search involves both a textual search and a IP search. To use IP search only, set the "ip-only" parameter to true.
  * @property {boolean} ip-only If using "filter", use this field to search objects by their IP address only, without involving the textual search.
  * @property {number} limit No more than that many results will be returned. Default:50, values: 1-500.
@@ -603,6 +615,27 @@
  * @property {string} details-level The level of detail for some of the fields in the response can vary from showing only the UID value of the object to a fully detailed representation of the object. Default: true, Values: uid, standard, full
  */
 
+ /**
+ * Check Point Management API standard-details return object format from 'show objects'
+ * @typedef {Object} show_objects_std
+ * @property {number} from From which element number the query was done.
+ * @property {show_obj_std[]} objects List of objects in the range
+ * @property {number} to To which element number the query was done.
+ * @property {number} total Total number of elements returned by the query.
+ * @memberof typedefs
+ */
+
+/**
+ * Check Point Management API standard-details return object format from 'show objects'
+ * @typedef {Object} show_objects_uid
+ * @property {number} from From which element number the query was done.
+ * @property {show_obj_uid[]} objects List of objects in the range
+ * @property {number} to To which element number the query was done.
+ * @property {number} total Total number of elements returned by the query.
+ * @memberof typedefs
+ */
+
+
 /**
 *  Definition of a json object.
 *  @typedef {Object} json
@@ -610,44 +643,6 @@
 *  @property {string} {*}
 *  @memberof typedefs
 */ 
+ 
 
-/**
- * where-used returned data format
- * @typedef {Object[]} uid - Array of Host objects by UID
- * @property {Object} used-directly - Direct use of object
- * @property {Number} used-directly.total - Total count of usage
- * @property {Object[]} used-directly.objects - Array of object dependencies
- * @property {Object[]} used-directly.access-control-rules - Array of access rule dependencies
- * @property {Object[]} used-directly.nat-rules - Array of nat rule dependencies
- * @property {Object[]} used-directly.threat-prevention-rules - Array of threat inspection rules
- * @property {Object} used-indirectly - Indirect or nested use of object
- * @property {Number} used-indirectly.total - Total count of indirect use
- * @property {Object[]} used-indirectly.objects - Array of object references
- * @property {Object[]} used-indirectly.access-control-rules - Array of nested access rule 
- * @property {Object[]} used-indirectly.nat-rules - Array of indirect nat rules
- * @property {Object[]} used-indirectly.threat-prevention-rules - Array of nested threat rules
- * @example 
- * { ip: [
-    *        {
-    *          uid: [
-    *          	  { 
-    * 	          used-directly: {
-    * 	       			  total: 0,
-    * 	        		  access-control-rules[],
-    * 	        		  nat-rules[],
-    * 	        		  threat-prevention-rules[],
-    * 	        		  objects[]
-    * 	        		  },
-    * 	      	  used-indirectly: {
-    * 	       			  total: 0,
-    * 	        		  access-control-rules[],
-    * 	        		  nat-rules[],
-    * 	        		  threat-prevention-rules[],
-    * 	        		  objects[]
-    * 	        		  }
-    *              }
-    *           ] 
-    *        }
-    *     ]
-    *  }
-    */
+   exports.unused = {};
